@@ -10,7 +10,7 @@ define('DB_NAME', 'barbershop_db');
 
 // buat kapasitas maksimal booking per hari
 // kalo mau ganti kouta, cukup ubah angka di sini
-define('KOUTA_HARIAN', 4);
+define('KUOTA_HARIAN', 4);
 
 // fungsi buat buka koneksi ke database
 // panggil di awal setiap endpoint yang butuh DB
