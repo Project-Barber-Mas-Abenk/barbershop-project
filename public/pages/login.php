@@ -1,5 +1,5 @@
 <?php
-$title = "Register - Shift Studio";
+$title = "Login - Shift Studio";
 ?>
 
 <!DOCTYPE html>
@@ -21,24 +21,17 @@ $title = "Register - Shift Studio";
         </div>
 
         <div class="auth-right">
-            <h4>Selamat Datang di Shift Studio</h4>
-            <h2>Bergabunglah bersama kami dan rasakan kenyamanan di setiap pencukuran.</h2>
+            <h4>Selamat Datang Kembali di Shift Studio</h4>
+            <h2>Masuk ke akun Anda untuk melanjutkan pemesanan dan menikmati layanan kami.</h2>
 
-            <form action="../../api/auth/register.php" method="POST">
-
-                <label>Nama</label>
-                <input type="text" name="nama" placeholder="Masukkan Nama Lengkap" required>
-
+            <form id="loginForm">
                 <label>Nomor Telepon</label>
-                <input type="text" name="phone" placeholder="Masukkan Nomor Telepon" required>
+                <input type="text" name="username" placeholder="Masukkan Nomor Telepon" required>
 
                 <label>Kata Sandi</label>
                 <input type="password" name="password" placeholder="Masukkan Kata Sandi" required>
 
-                <label>Konfirmasi Kata Sandi</label>
-                <input type="password" name="confirm_password" placeholder="Masukkan Ulang Kata Sandi" required>
-
-                <button type="submit">Buat Akun</button>
+                <button type="submit">Login</button>
             </form>
 
             <div class="divider">Atau masuk menggunakan</div>
@@ -54,7 +47,7 @@ $title = "Register - Shift Studio";
             </button>
 
             <div class="auth-link">
-                Sudah memiliki akun? <a href="login.php">Login</a>
+                You don't have any account? <a href="register.php">Register</a>
             </div>
         </div>
 
