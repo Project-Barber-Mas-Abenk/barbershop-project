@@ -9,6 +9,7 @@ $title = "Lupa Kata Sandi - Shift Studio";
     <meta charset="UTF-8">
     <title><?= $title ?></title>
     <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="../assets/css/component.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 
@@ -17,7 +18,7 @@ $title = "Lupa Kata Sandi - Shift Studio";
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
-            const DUMMY_MODE = true; // ubah ke false kalau mau aktif backend asli
+            const DUMMY_MODE = true;
 
             const stepPhone = document.getElementById("step-phone");
             const stepOtp = document.getElementById("step-otp");
@@ -30,34 +31,27 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 step.classList.add("active");
             }
 
-            // ==========================
-            // OTP PIN BEHAVIOR (NEW)
-            // ==========================
+            // OTP PIN BEHAVIOR
             const otpInputs = document.querySelectorAll(".otp-input");
 
             otpInputs.forEach((input, index) => {
 
-                // Hanya angka
                 input.addEventListener("input", function() {
                     this.value = this.value.replace(/[^0-9]/g, "");
-
                     if (this.value && index < otpInputs.length - 1) {
                         otpInputs[index + 1].focus();
                     }
                 });
 
-                // Backspace mundur
                 input.addEventListener("keydown", function(e) {
                     if (e.key === "Backspace" && !this.value && index > 0) {
                         otpInputs[index - 1].focus();
                     }
                 });
 
-                // Support paste 6 digit langsung
                 input.addEventListener("paste", function(e) {
                     e.preventDefault();
                     let pasteData = e.clipboardData.getData("text").replace(/[^0-9]/g, "");
-
                     if (pasteData.length === otpInputs.length) {
                         otpInputs.forEach((inp, i) => {
                             inp.value = pasteData[i];
@@ -71,7 +65,17 @@ $title = "Lupa Kata Sandi - Shift Studio";
             document.getElementById("phoneForm").addEventListener("submit", function(e) {
                 if (DUMMY_MODE) {
                     e.preventDefault();
-                    showStep(stepOtp);
+
+                    showModal({
+                        type: "success",
+                        titleText: "Kode Dikirim",
+                        messageText: "Kode verifikasi berhasil dikirim ke nomor Anda.",
+                        buttonText: "Lanjut",
+                        onConfirm: function() {
+                            showStep(stepOtp);
+                        }
+                    });
+
                     return;
                 }
             });
@@ -87,11 +91,25 @@ $title = "Lupa Kata Sandi - Shift Studio";
                     });
 
                     if (otpCode.length < 6) {
-                        alert("Kode verifikasi belum lengkap.");
+                        showModal({
+                            type: "error",
+                            titleText: "Kode Tidak Lengkap",
+                            messageText: "Silakan masukkan 6 digit kode verifikasi terlebih dahulu.",
+                            buttonText: "Mengerti"
+                        });
                         return;
                     }
 
-                    showStep(stepReset);
+                    showModal({
+                        type: "success",
+                        titleText: "Verifikasi Berhasil",
+                        messageText: "Kode verifikasi valid.",
+                        buttonText: "Lanjut",
+                        onConfirm: function() {
+                            showStep(stepReset);
+                        }
+                    });
+
                     return;
                 }
             });
@@ -100,7 +118,17 @@ $title = "Lupa Kata Sandi - Shift Studio";
             document.getElementById("resetForm").addEventListener("submit", function(e) {
                 if (DUMMY_MODE) {
                     e.preventDefault();
-                    window.location.href = "login.php";
+
+                    showModal({
+                        type: "success",
+                        titleText: "Berhasil",
+                        messageText: "Kata sandi berhasil diperbarui.",
+                        buttonText: "Login Sekarang",
+                        onConfirm: function() {
+                            window.location.href = "login.php";
+                        }
+                    });
+
                     return;
                 }
             });
@@ -130,7 +158,7 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 </form>
             </div>
 
-            <!-- Step 2 (OTP PIN STYLE) -->
+            <!-- Step 2 -->
             <div id="step-otp" class="auth-step">
                 <h4>Masukkan Kode Verifikasi</h4>
                 <h2>Masukkan kode verifikasi yang telah dikirim ke nomor telepon Anda.</h2>
@@ -147,7 +175,6 @@ $title = "Lupa Kata Sandi - Shift Studio";
 
                     <button type="submit">Verifikasi</button>
 
-                    <!-- Resend OTP-->
                     <div class="resend-otp">
                         <p>Tidak menerima kode verifikasi?
                             <a href="#" id="resendOtp">Kirim Ulang Kode?</a>
@@ -176,6 +203,8 @@ $title = "Lupa Kata Sandi - Shift Studio";
         </div>
 
     </div>
+
+    <?php include '../components/ui/modal.php'; ?>
 
 </body>
 
