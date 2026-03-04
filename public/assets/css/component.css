@@ -1,0 +1,136 @@
+/* =========================
+   MODAL COMPONENT
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Overlay */
+.modal__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+}
+
+/* Container */
+.modal__container {
+    position: relative;
+    width: 380px;
+    padding: 40px 30px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #111111, #2a2a2a);
+    text-align: center;
+    color: white;
+
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal.active .modal__container {
+    transform: scale(1);
+}
+
+/* Icon */
+.modal__icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 26px;
+}
+
+/* Title */
+.modal__title {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Message */
+.modal__message {
+    font-size: 14px;
+    color: #cccccc;
+    margin-bottom: 25px;
+}
+
+/* Button */
+.modal__button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+/* =========================
+   VARIANTS
+========================= */
+
+/* SUCCESS */
+.modal--success .modal__icon {
+    background: #b8860b;
+    color: black;
+}
+
+.modal--success .modal__button {
+    background: #b8860b;
+    color: black;
+}
+
+.modal--success .modal__button:hover {
+    background: #d4a017;
+}
+
+/* ERROR */
+.modal--error .modal__icon {
+    background: #c0392b;
+    color: white;
+}
+
+.modal--error .modal__button {
+    background: #c0392b;
+    color: white;
+}
+
+.modal--error .modal__button:hover {
+    background: #e74c3c;
+}
+
+/* INFO */
+.modal--info .modal__icon {
+    background: #2980b9;
+    color: white;
+}
+
+.modal--info .modal__button {
+    background: #2980b9;
+    color: white;
+}
+
+.modal--info .modal__button:hover {
+    background: #3498db;
+}

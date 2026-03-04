@@ -1,150 +1,160 @@
 /* RESET */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    height: 100vh;
-    background: black;
-    margin: 0;
+  font-family: "Poppins", sans-serif;
+  height: 100vh;
+  background: black;
+  margin: 0;
 }
 
 /* CONTAINER */
 .auth-container {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh;
 }
 
 .auth-left {
-    width: 50%;
-    background: black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 50%;
+  background: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-left img {
-    width: 100%;
-    max-width: 600px;
+  width: 100%;
+  max-width: 600px;
 }
 
 .auth-right {
-    width: 50%;
-    padding: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    background: linear-gradient(to right, #000 20%, #5A4632 80%);
-    color: white;
+  width: 50%;
+  padding: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(to right, #000 20%, #5a4632 80%);
+  color: white;
 }
 
 /* TEXT */
 .auth-right h4 {
-    font-family:  'Instrument Serif', serif;
-    font-weight: normal;
-    font-style: italic;
-    font-size: 20px;
-    margin-bottom: 10px;
-    opacity: 0.8;
+  font-family: "Instrument Serif", serif;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 20px;
+  margin-bottom: 10px;
+  opacity: 0.8;
 }
 
 .auth-right h2 {
-    font-size: 28px;
-    margin-bottom: 30px;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+/* STEPS */
+.auth-right .auth-step {
+  display: none;
+}
+
+.auth-right .auth-step.active {
+  display: block;
 }
 
 /* FORM */
 form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-    font-size: 14px;
-    margin: 10px 0 5px;
+  font-size: 16px;
+  margin: 10px 0 5px;
 }
 
 input {
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    font-size: medium;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 button {
-    margin-top: 20px;
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    background: #c8a96a;
-    color: black;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #c8a96a;
+  color: black;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 button:hover {
-    background: #e0c48c;
+  background: #e0c48c;
 }
 
 /* FORGOT PASSWORD */
 .forgot-password {
-    text-align: right;
-    margin-top: 10px;
-    font-size: 14px;
+  text-align: right;
+  margin-top: 10px;
+  font-size: 14px;
 }
 
 .forgot-password a {
-    color: #c8a96a;
-    text-decoration: none;
+  color: #c8a96a;
+  text-decoration: none;
 }
 
 .forgot-password a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 /* DIVIDER */
 .divider {
-    margin: 25px 0;
-    text-align: center;
-    position: relative;
+  margin: 25px 0;
+  text-align: center;
+  position: relative;
 }
 
 /* GOOGLE BUTTON */
 .google-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-    padding: 12px;
-    margin-top: 0;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.4);
-    background: transparent;
-    color: white;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px;
+  margin-top: 0;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  cursor: pointer;
 }
 
 /* LINK */
 .auth-link {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
 }
 
 .auth-link a {
-    color: #c8a96a;
-    text-decoration: none;
+  color: #c8a96a;
+  text-decoration: none;
 }
 
 .auth-link a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }

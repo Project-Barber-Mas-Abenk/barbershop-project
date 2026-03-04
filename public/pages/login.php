@@ -32,7 +32,7 @@ $title = "Login - Shift Studio";
                 <input type="password" name="password" placeholder="Masukkan Kata Sandi" required>
 
                 <div class="forgot-password">
-                    <a href="lupaSandi.php">Lupa Kata Sandi?</a>
+                    <a href="forgotPassword.php">Lupa Kata Sandi?</a>
                 </div>
 
                 <button type="submit">Login</button>
