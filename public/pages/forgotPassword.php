@@ -30,6 +30,43 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 step.classList.add("active");
             }
 
+            // ==========================
+            // OTP PIN BEHAVIOR (NEW)
+            // ==========================
+            const otpInputs = document.querySelectorAll(".otp-input");
+
+            otpInputs.forEach((input, index) => {
+
+                // Hanya angka
+                input.addEventListener("input", function() {
+                    this.value = this.value.replace(/[^0-9]/g, "");
+
+                    if (this.value && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus();
+                    }
+                });
+
+                // Backspace mundur
+                input.addEventListener("keydown", function(e) {
+                    if (e.key === "Backspace" && !this.value && index > 0) {
+                        otpInputs[index - 1].focus();
+                    }
+                });
+
+                // Support paste 6 digit langsung
+                input.addEventListener("paste", function(e) {
+                    e.preventDefault();
+                    let pasteData = e.clipboardData.getData("text").replace(/[^0-9]/g, "");
+
+                    if (pasteData.length === otpInputs.length) {
+                        otpInputs.forEach((inp, i) => {
+                            inp.value = pasteData[i];
+                        });
+                        otpInputs[otpInputs.length - 1].focus();
+                    }
+                });
+            });
+
             // STEP 1
             document.getElementById("phoneForm").addEventListener("submit", function(e) {
                 if (DUMMY_MODE) {
@@ -37,23 +74,26 @@ $title = "Lupa Kata Sandi - Shift Studio";
                     showStep(stepOtp);
                     return;
                 }
-
-                // ===========================
-                // REAL BACKEND LOGIC HERE
-                // ===========================
             });
 
-            // STEP 2
+            // STEP 2 (UPDATED)
             document.getElementById("otpForm").addEventListener("submit", function(e) {
                 if (DUMMY_MODE) {
                     e.preventDefault();
+
+                    let otpCode = "";
+                    otpInputs.forEach(input => {
+                        otpCode += input.value;
+                    });
+
+                    if (otpCode.length < 6) {
+                        alert("Kode verifikasi belum lengkap.");
+                        return;
+                    }
+
                     showStep(stepReset);
                     return;
                 }
-
-                // ===========================
-                // REAL BACKEND LOGIC HERE
-                // ===========================
             });
 
             // STEP 3
@@ -63,10 +103,6 @@ $title = "Lupa Kata Sandi - Shift Studio";
                     window.location.href = "login.php";
                     return;
                 }
-
-                // ===========================
-                // REAL BACKEND LOGIC HERE
-                // ===========================
             });
 
         });
@@ -94,14 +130,21 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 </form>
             </div>
 
-            <!-- Step 2 -->
+            <!-- Step 2 (UPDATED OTP PIN STYLE) -->
             <div id="step-otp" class="auth-step">
                 <h4>Masukkan Kode Verifikasi</h4>
                 <h2>Masukkan kode verifikasi yang telah dikirim ke nomor telepon Anda.</h2>
 
                 <form id="otpForm">
-                    <label>Kode Verifikasi</label>
-                    <input type="text" name="otp" placeholder="Masukkan Kode Verifikasi" required>
+                    <div class="otp-container">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric" autocomplete="one-time-code">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                        <input type="text" maxlength="1" class="otp-input" inputmode="numeric">
+                    </div>
+
                     <button type="submit">Verifikasi</button>
                 </form>
             </div>
