@@ -76,7 +76,7 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 }
             });
 
-            // STEP 2 (UPDATED)
+            // STEP 2
             document.getElementById("otpForm").addEventListener("submit", function(e) {
                 if (DUMMY_MODE) {
                     e.preventDefault();
@@ -130,7 +130,7 @@ $title = "Lupa Kata Sandi - Shift Studio";
                 </form>
             </div>
 
-            <!-- Step 2 (UPDATED OTP PIN STYLE) -->
+            <!-- Step 2 (OTP PIN STYLE) -->
             <div id="step-otp" class="auth-step">
                 <h4>Masukkan Kode Verifikasi</h4>
                 <h2>Masukkan kode verifikasi yang telah dikirim ke nomor telepon Anda.</h2>
@@ -146,6 +146,14 @@ $title = "Lupa Kata Sandi - Shift Studio";
                     </div>
 
                     <button type="submit">Verifikasi</button>
+
+                    <!-- Resend OTP-->
+                    <div class="resend-otp">
+                        <p>Tidak menerima kode verifikasi?
+                            <a href="#" id="resendOtp">Kirim Ulang Kode?</a>
+                        </p>
+                    </div>
+
                 </form>
             </div>
 
