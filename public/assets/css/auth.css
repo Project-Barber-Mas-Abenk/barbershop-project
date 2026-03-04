@@ -95,6 +95,22 @@ button:hover {
     background: #e0c48c;
 }
 
+/* FORGOT PASSWORD */
+.forgot-password {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.forgot-password a {
+    color: #c8a96a;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
 /* DIVIDER */
 .divider {
     margin: 25px 0;
