@@ -1,19 +1,7 @@
 <?php
-// METHOD: GET
-// URL : /api/layanan/get_layanan.php
-
-// ga butuh login karena endpint ini dipake
-// oleh from booking pelanggan buat ngisi dropdown
-// pilihan layanan yang tersedia di babershop
-
-// query param optional:
-// ?id=1 - kalo mau ambil satu layanan spesifik
-// kalo ngga diisi, ambil semua layanan
-
 require_once '../config/config.php';
 
-// cuma menerima method GET
-if($_SERVER['REQUEST_METHOD'] !== 'GET') {
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405);
     echo json_encode(['status' => 'error', 'message' => 'Method tidak diizinkan']);
     exit;
@@ -21,8 +9,6 @@ if($_SERVER['REQUEST_METHOD'] !== 'GET') {
 
 $conn = getConnection();
 
-// kalo ada query param ?id=, ambil satu layanan saja
-// ini berguna kalo FE butuh detai satu layanan spesifik
 if (!empty($_GET['id'])) {
     $id = (int) $_GET['id'];
 
@@ -48,8 +34,6 @@ if (!empty($_GET['id'])) {
     exit;
 }
 
-// kalo ga ada query param id, ambil semua layanan
-// diurutin berdasarkan harga dari yang termurah
 $result = $conn->query('SELECT id, nama, harga FROM layanan ORDER BY harga ASC');
 
 $layanan = [];
@@ -57,8 +41,6 @@ while ($row = $result->fetch_assoc()) {
     $layanan[] = $row;
 }
 
-// kalo tabel layanan kosong, tetep return success
-// tapi dengan array data kosong supaya FE ble error
 echo json_encode([
     'status' => 'success',
     'total' => count($layanan),

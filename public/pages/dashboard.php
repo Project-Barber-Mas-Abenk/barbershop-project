@@ -1,111 +1,95 @@
 <?php
 $title = "Dashboard - Shift Studio";
+
+session_start();
+
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header('Location: login.php');
+    exit();
+}
+
+$isAdmin = $_SESSION['user_role'] === 'admin';
+$userName = $_SESSION['user_nama'] ?? 'User';
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <title><?php echo $title; ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../assets/css/dashboard.css">
 </head>
-
 <body>
-
     <div class="dashboard-layout">
         <?php include '../components/ui/sidebar.php'; ?>
 
         <main class="main-content">
-
-            <!-- Header -->
             <header class="header">
                 <div class="header-left">
                     <h1>Dashboard</h1>
-                    <p>Sabtu, 28 Februari 2026 00:09 WIB</p>
+                    <p id="currentDate"></p>
                 </div>
-
                 <div class="header-right">
                     <span class="status-online">● Online</span>
-                    <button class="icon-btn"></button>
-                    <button class="icon-btn"></button>
+                    <span><?php echo htmlspecialchars($userName); ?> (<?php echo $isAdmin ? 'Admin' : 'User'; ?>)</span>
                 </div>
             </header>
 
-            <!-- SUMMARY CARD -->
             <section class="summary">
                 <div class="card">
                     <p>Total Booking</p>
-                    <h2>24</h2>
-                    <span class="card-info">+4 dari kemarin</span>
+                    <h2 id="totalBooking">0</h2>
                 </div>
-
                 <div class="card">
                     <p>Booking Pending</p>
-                    <h2>5</h2>
-                    <span class="card-info">Menunggu Konfirmasi</span>
+                    <h2 id="pendingBooking">0</h2>
                 </div>
-
                 <div class="card">
-                    <p>Confirmed & Lunas</p>
-                    <h2>12</h2>
-                    <span class="card-info">Booking aktif hari ini</span>
+                    <p>Confirmed</p>
+                    <h2 id="confirmedBooking">0</h2>
                 </div>
-
+                <?php if ($isAdmin): ?>
                 <div class="card">
                     <p>Dibatalkan</p>
-                    <h2>3</h2>
-                    <span class="card-info">Dari total booking</span>
+                    <h2 id="cancelledBooking">0</h2>
                 </div>
-
                 <div class="card">
                     <p>Total Pendapatan</p>
-                    <h2>19 Lapangan Kerja</h2>
-                    <span class="card-info">Dari total transaksi lunas</span>
+                    <h2 id="totalRevenue">Rp 0</h2>
                 </div>
+                <?php endif; ?>
             </section>
 
-            <!-- CONTENT GRID -->
             <section class="dashboard-grid">
                 <div class="panel-notif">
-                    <h3>Notifikasi Terbaru</h3>
-
-                    <ul class="notif-list">
-                        <li>
-                            <div>
-                                <strong>3 Booking Baru</strong>
-                                <p>5 menit lalu</p>
-                            </div>
-                            <button class="btn-primary">Lihat</button>
-                        </li>
-
-                        <li>
-                            <div>
-                                <strong>Bukti Transfer Perlu Verifikasi</strong>
-                                <p>2 menit lalu</p>
-                            </div>
-                            <button class="btn-primary">Verifikasi</button>
-                        </li>
+                    <h3>Booking Terbaru</h3>
+                    <ul class="notif-list" id="recentBookings">
+                        <li>Memuat data...</li>
                     </ul>
                 </div>
 
                 <div class="panel">
                     <h3>Aksi Langsung</h3>
-
                     <div class="quick-actions">
-                        <button>Daftar Booking</button>
-                        <button>Manajemen Payment</button>
-                        <button>Manajemen User</button>
-                        <button>Lihat Laporan</button>
+                        <button onclick="location.href='booking.php'"><?php echo $isAdmin ? 'Daftar Booking' : 'Booking Baru'; ?></button>
+                        <?php if ($isAdmin): ?>
+                        <button onclick="location.href='payment.php'">Manajemen Payment</button>
+                        <button onclick="location.href='users.php'">Manajemen User</button>
+                        <?php endif; ?>
                     </div>
                 </div>
             </section>
-
-            </main>
-
+        </main>
     </div>
 
-</body>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/dashboard.js"></script>
+    <script>
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
 
+        loadDashboardData(<?php echo $isAdmin ? 'true' : 'false'; ?>);
+    </script>
+</body>
 </html>
