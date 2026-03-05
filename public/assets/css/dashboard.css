@@ -98,9 +98,14 @@ body {
     margin-bottom: 40px;
 }
 
+.header .header-right {
+    display: flex;
+    align-items: center;
+}
+
 .header h1 {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 1000;
 }
 
 .header p {
@@ -110,16 +115,17 @@ body {
 }
 
 .status-online {
-    background: #1a1a1a;
     padding: 8px 14px;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     font-size: 13px;
+    /* border: 1px solid rgb(4, 255, 4); */
+    color: #d4a017;
 }
 
 .icon-btn {
     width: 36px;
     height: 36px;
-    background: #1a1a1a;
+    background: #d4a017;
     border: none;
     border-radius: 8px;
     margin-left: 10px;
@@ -162,10 +168,95 @@ body {
 }
 
 /* GRID */
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 24px;
+
+.dashboard-grid{
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:24px;
+margin-bottom:24px;
+}
+
+.grid-right{
+display:flex;
+flex-direction:column;
+gap:24px;
+}
+
+
+/* BOOKING TERBARU */
+
+.booking-terbaru{
+width:100%;
+}
+
+.booking-table{
+width:100%;
+border-collapse:collapse;
+}
+
+.booking-table th{
+text-align:left;
+padding:14px;
+color:#9a9a9a;
+border-bottom:1px solid #444;
+}
+
+.booking-table td{
+padding:16px 14px;
+border-bottom:1px solid #2a2a2a;
+}
+
+.booking-table tr:hover{
+background:#2a2a2a;
+}
+
+
+/* STATUS TABLE */
+
+.confirmed{
+color:#1bd89b;
+font-weight:600;
+}
+
+.pending{
+color:#ffd600;
+font-weight:600;
+}
+
+.cancel{
+color:#ff4d4d;
+font-weight:600;
+}
+
+.dashboard-grid .h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.dashboard-grid .grid-right {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+}
+
+.dashboard-grid .chart-placeholder {
+    background: #1a1a1a;
+    border: 1px solid #1f1f1f;
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    color: #aaa;
+    justify-content: end;
+    margin-top: auto;
+}
+
+.dashboard-grid .jadwal-placeholder {
+    background: #1a1a1a;
+    border: 1px solid #1f1f1f;
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    color: #aaa;
 }
 
 .panel-notif,
@@ -174,6 +265,25 @@ body {
     border: 1px solid #1f1f1f;
     border-radius: 14px;
     padding: 24px;
+}
+
+.panel-notif .top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-notif .btn-secondary {
+    background: transparent;
+    border: 1px solid #d4a017;
+    padding: 6px 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #d4a017;
+    cursor: pointer;
 }
 
 .panel-notif h3,
@@ -210,31 +320,168 @@ body {
 }
 
 .btn-primary {
+    background: none;
+    border: 1px solid #d4a017;
+    padding: 6px 14px;
+    width: 110px;
+    padding: 6px 0;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #d4a017;
+    text-align: center;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
     background: #d4a017;
-    border: none;
+    color: #000;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #d4a017;
     padding: 6px 14px;
     border-radius: 6px;
     font-size: 13px;
+    font-weight: 700;
+    color: #d4a017;
     cursor: pointer;
+    margin-left: 20px;
 }
 
-/* QUICK ACTIONS */
-.quick-actions {
-    display: grid;
-    gap: 12px;
-}
-
-.quick-actions button {
-    background: #1a1a1a;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    color: #fff;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.quick-actions button:hover {
+.btn-secondary:hover {
     background: #d4a017;
     color: #000;
+}
+
+/* PANEL BOX */
+.panel-box{
+    border:1px solid #a8741a;
+    border-radius:20px;
+    overflow:hidden;
+    background:#1a1a1a;
+}
+
+/* HEADER PANEL */
+
+.panel-header{
+    padding:20px 30px;
+    border-bottom:1px solid #a8741a;
+    display:flex;
+    align-items:center;
+}
+
+.panel-header.between{
+    justify-content:space-between;
+}
+
+.panel-header h2{
+    font-size:22px;
+    font-weight:700;
+}
+
+/* BODY PANEL */
+
+.panel-body{
+    padding:25px 30px;
+    background:#3b3838;
+}
+
+.panel-body h4{
+    color:#9a9a9a;
+    margin-bottom:20px;
+    font-weight:500;
+}
+
+/* CHART */
+
+.chart-bars{
+    display:flex;
+    align-items:flex-end;
+    gap:25px;
+}
+
+.bar-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.bar{
+    width:60px;
+    background:#cfcfcf;
+    border-radius:10px;
+}
+
+.bar-item.active .bar{
+    background:#9b6a1a;
+}
+
+.bar-item span{
+    margin-top:10px;
+    color:#9a9a9a;
+}
+
+/* JADWAL */
+
+.jadwal-list{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.jadwal-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.time{
+    width:90px;
+    color:#bdbdbd;
+}
+
+.jadwal-info{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex:1;
+}
+
+.line{
+    width:6px;
+    height:40px;
+    border-radius:4px;
+}
+
+.green{
+    background:#1bd89b;
+}
+
+.yellow{
+    background:#ffd600;
+}
+
+.jadwal-info strong{
+    font-size:16px;
+}
+
+.jadwal-info p{
+    font-size:14px;
+    color:#bdbdbd;
+}
+
+/* STATUS */
+
+.status{
+    font-weight:600;
+}
+
+.lunas{
+    color:#1bd89b;
+}
+
+.pending{
+    color:#ffd600;
 }

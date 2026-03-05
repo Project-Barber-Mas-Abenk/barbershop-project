@@ -22,7 +22,13 @@ $userName = $_SESSION['user_nama'] ?? 'User';
         </ul>
     </nav>
     <div class="logout">
+<<<<<<< HEAD
         <a href="#" onclick="logout(); return false;">Logout</a>
+=======
+        <ul>
+            <li><a href="logout.php">Logout</a></li>
+        </ul>
+>>>>>>> 8af2495c69b8ad9a317136f1112f7c9bef399e98
     </div>
 </div>
 
