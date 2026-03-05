@@ -28,7 +28,7 @@ $title = "Dashboard - Shift Studio";
 
                 <div class="header-right">
                     <span class="status-online">● Online</span>
-                    <button class="icon-btn"></button>
+                    <button class="icon-btn"></i></button>
                     <button class="icon-btn"></button>
                 </div>
             </header>
@@ -68,10 +68,33 @@ $title = "Dashboard - Shift Studio";
 
             <!-- CONTENT GRID -->
             <section class="dashboard-grid">
+
                 <div class="panel-notif">
-                    <h3>Notifikasi Terbaru</h3>
+                    <div class="top-panel">
+                        <div class="top-left">
+                            <h3>Notifikasi Terbaru</h3>
+                        </div>
+                        <div class="top-right">
+                            <button class="btn-secondary">Tandai Semua Sudah Dibaca</button>
+                            <button class="btn-secondary">Lihat Semua</button>
+                        </div>
+                    </div>
 
                     <ul class="notif-list">
+                        <li>
+                            <div>
+                                <strong>3 Booking Baru</strong>
+                                <p>5 menit lalu</p>
+                            </div>
+                            <button class="btn-primary">Lihat</button>
+                        </li>
+                        <li>
+                            <div>
+                                <strong>Bukti Transfer Perlu Verifikasi</strong>
+                                <p>2 menit lalu</p>
+                            </div>
+                            <button class="btn-primary">Verifikasi</button>
+                        </li>
                         <li>
                             <div>
                                 <strong>3 Booking Baru</strong>
@@ -90,19 +113,52 @@ $title = "Dashboard - Shift Studio";
                     </ul>
                 </div>
 
-                <div class="panel">
-                    <h3>Aksi Langsung</h3>
+                <div class="grid-right">
+                    <div class="panel-booking">
+                        <h2>Booking 7 Hari Terakhir</h2>
+                        <h4>Jumlah Booking Per Hari</h4>
+                        <div class="chart-placeholder">
+                            <!-- Placeholder untuk grafik -->
+                            <p>Grafik akan ditampilkan di sini</p>
+                        </div>
+                    </div>
 
-                    <div class="quick-actions">
-                        <button>Daftar Booking</button>
-                        <button>Manajemen Payment</button>
-                        <button>Manajemen User</button>
-                        <button>Lihat Laporan</button>
+                    <div class="panel-jadwal">
+                        <h2>Jadwal Booking Hari Ini</h2>
+                        <h4>Daftar Booking Aktif</h4>
+                        <div class="jadwal-placeholder">
+                            <div class="jadwal-item">
+                                <div>
+                                    <strong>John Doe</strong>
+                                    <p>10:00 - 11:00 WIB</p>
+                                </div>
+                                <span class="status-confirmed">Confirmed</span>
+                            </div>
+
+                            <div class="jadwal-item">
+                                <div>
+                                    <strong>Jane Smith</strong>
+                                    <p>11:30 - 12:30 WIB</p>
+                                </div>
+                                <span class="status-pending">Pending</span>
+                            </div>
+
+                            <div class="jadwal-item">
+                                <div>
+                                    <strong>Michael Brown</strong>
+                                    <p>13:00 - 14:00 WIB</p>
+                                </div>
+                                <span class="status-confirmed">Confirmed</span>
+                            </div>
+
+                            <!-- Tambahkan jadwal lainnya sesuai kebutuhan -->
+                        </div>
                     </div>
                 </div>
+
             </section>
 
-            </main>
+        </main>
 
     </div>
 

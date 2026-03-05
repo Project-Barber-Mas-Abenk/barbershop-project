@@ -98,9 +98,14 @@ body {
     margin-bottom: 40px;
 }
 
+.header .header-right {
+    display: flex;
+    align-items: center;
+}
+
 .header h1 {
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 1000;
 }
 
 .header p {
@@ -110,16 +115,17 @@ body {
 }
 
 .status-online {
-    background: #1a1a1a;
     padding: 8px 14px;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     font-size: 13px;
+    /* border: 1px solid rgb(4, 255, 4); */
+    color: #d4a017;
 }
 
 .icon-btn {
     width: 36px;
     height: 36px;
-    background: #1a1a1a;
+    background: #d4a017;
     border: none;
     border-radius: 8px;
     margin-left: 10px;
@@ -164,8 +170,39 @@ body {
 /* GRID */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
     gap: 24px;
+    grid-template-columns: 2fr 1fr;
+}
+
+.dashboard-grid .h2 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.dashboard-grid .grid-right {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+}
+
+.dashboard-grid .chart-placeholder {
+    background: #1a1a1a;
+    border: 1px solid #1f1f1f;
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    color: #aaa;
+    justify-content: end;
+    margin-top: auto;
+}
+
+.dashboard-grid .jadwal-placeholder {
+    background: #1a1a1a;
+    border: 1px solid #1f1f1f;
+    border-radius: 14px;
+    padding: 40px;
+    text-align: center;
+    color: #aaa;
 }
 
 .panel-notif,
@@ -174,6 +211,25 @@ body {
     border: 1px solid #1f1f1f;
     border-radius: 14px;
     padding: 24px;
+}
+
+.panel-notif .top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.panel-notif .btn-secondary {
+    background: transparent;
+    border: 1px solid #d4a017;
+    padding: 6px 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #d4a017;
+    cursor: pointer;
 }
 
 .panel-notif h3,
@@ -216,6 +272,21 @@ body {
     border-radius: 6px;
     font-size: 13px;
     cursor: pointer;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #d4a017;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #d4a017;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background: #d4a017;
+    color: #000;
 }
 
 /* QUICK ACTIONS */
