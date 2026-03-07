@@ -1,5 +1,6 @@
 <?php
 require_once '../config/config.php';
+
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-$required = ['nama', 'no_hp', 'layanan_id', 'tanggal', 'jam', 'metode_bayar'];
+$required = ['layanan_id', 'tanggal', 'jam', 'metode_bayar'];
 foreach ($required as $field) {
     if (empty($data[$field])) {
         http_response_code(400);
@@ -19,13 +20,10 @@ foreach ($required as $field) {
     }
 }
 
-$nama = htmlspecialchars(trim($data['nama']));
-$no_hp = htmlspecialchars($data['no_hp']);
 $layanan_id = (int) $data['layanan_id'];
 $tanggal = $data['tanggal'];
 $jam = $data['jam'];
 $metode_bayar = $data['metode_bayar'];
-$user_id = !empty($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
 $today = new DateTime();
 $today->setTime(0, 0, 0);
@@ -41,6 +39,33 @@ if ($tgl_booking <= $today) {
 }
 
 $conn = getConnection();
+
+$nama = '';
+$no_hp = '';
+$user_id = null;
+
+if (!empty($_SESSION['logged_in']) && $_SESSION['user_role'] === 'user') {
+    $user_id = $_SESSION['user_id'];
+    $stmt_user = $conn->prepare('SELECT nama, no_hp FROM users WHERE id = ?');
+    $stmt_user->bind_param('i', $user_id);
+    $stmt_user->execute();
+    $user_data = $stmt_user->get_result()->fetch_assoc();
+    if ($user_data) {
+        $nama = $user_data['nama'];
+        $no_hp = $user_data['no_hp'];
+    }
+}
+
+if (empty($nama) || empty($no_hp)) {
+    if (empty($data['nama']) || empty($data['no_hp'])) {
+        http_response_code(400);
+        echo json_encode(['status' => 'error', 'message' => 'Nama dan no_hp wajib diisi']);
+        $conn->close();
+        exit;
+    }
+    $nama = htmlspecialchars(trim($data['nama']));
+    $no_hp = htmlspecialchars($data['no_hp']);
+}
 
 $stmt = $conn->prepare('SELECT id, kuota_harian, kuota_saat_ini FROM kuota WHERE tanggal = ?');
 $stmt->bind_param('s', $tanggal);
@@ -85,23 +110,28 @@ $harga = $res_l->fetch_assoc()['harga'];
 $conn->begin_transaction();
 
 try {
-    $s1 = $conn->prepare('INSERT INTO pemesanan (user_id, nama_pelanggan, no_hp, layanan_id, tanggal, jam, status) VALUES (?, ?, ?, ?, ?, ?, "menunggu")');
-    $s1->bind_param('ississ', $user_id, $nama, $no_hp, $layanan_id, $tanggal, $jam);
+    $s1 = $conn->prepare('INSERT INTO pelanggan (user_id, nama, no_hp) VALUES (?, ?, ?)');
+    $s1->bind_param('iss', $user_id, $nama, $no_hp);
     $s1->execute();
+    $pelanggan_id = $conn->insert_id;
+
+    $s2 = $conn->prepare('INSERT INTO pemesanan (pelanggan_id, layanan_id, tanggal, jam, status) VALUES (?, ?, ?, ?, "menunggu")');
+    $s2->bind_param('iiss', $pelanggan_id, $layanan_id, $tanggal, $jam);
+    $s2->execute();
     $pemesanan_id = $conn->insert_id;
 
-    $s2 = $conn->prepare('INSERT INTO pembayaran (pemesanan_id, metode, status, jumlah) VALUES (?, ?, "menunggu", ?)');
-    $s2->bind_param('isd', $pemesanan_id, $metode_bayar, $harga);
-    $s2->execute();
-
-    $nomor_antrian = $kuota_saat_ini + 1;
-    $s3 = $conn->prepare('INSERT INTO antrian (pemesanan_id, nomor_antrian, tanggal) VALUES (?, ?, ?)');
-    $s3->bind_param('iis', $pemesanan_id, $nomor_antrian, $tanggal);
+    $s3 = $conn->prepare('INSERT INTO pembayaran (pemesanan_id, metode, status, jumlah) VALUES (?, ?, "menunggu", ?)');
+    $s3->bind_param('isd', $pemesanan_id, $metode_bayar, $harga);
     $s3->execute();
 
-    $s4 = $conn->prepare('UPDATE kuota SET kuota_saat_ini = kuota_saat_ini + 1 WHERE tanggal = ?');
-    $s4->bind_param('s', $tanggal);
+    $nomor_antrian = $kuota_saat_ini + 1;
+    $s4 = $conn->prepare('INSERT INTO antrian (pemesanan_id, nomor_antrian, tanggal) VALUES (?, ?, ?)');
+    $s4->bind_param('iis', $pemesanan_id, $nomor_antrian, $tanggal);
     $s4->execute();
+
+    $s5 = $conn->prepare('UPDATE kuota SET kuota_saat_ini = kuota_saat_ini + 1 WHERE tanggal = ?');
+    $s5->bind_param('s', $tanggal);
+    $s5->execute();
 
     $conn->commit();
 
@@ -113,10 +143,9 @@ try {
             'pemesanan_id' => $pemesanan_id,
             'nomor_antrian' => $nomor_antrian,
             'tanggal' => $tanggal,
-            'jam' => $jam
+            'jam' => $jam,
         ]
     ]);
-
 } catch (Exception $e) {
     $conn->rollback();
     http_response_code(500);

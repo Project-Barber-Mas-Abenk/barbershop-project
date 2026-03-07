@@ -1,8 +1,9 @@
 <?php
 require_once '../config/config.php';
+
 session_start();
 
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+if (empty($_SESSION['logged_in'])) {
     http_response_code(401);
     echo json_encode(['status' => 'error', 'message' => 'Silakan login terlebih dahulu']);
     exit;
@@ -26,21 +27,6 @@ $pemesanan_id = (int) $data['pemesanan_id'];
 $tanggal_baru = $data['tanggal_baru'];
 $jam_baru = $data['jam_baru'];
 
-if ($_SESSION['user_role'] === 'user') {
-    $conn = getConnection();
-    $check = $conn->prepare('SELECT user_id FROM pemesanan WHERE id = ?');
-    $check->bind_param('i', $pemesanan_id);
-    $check->execute();
-    $res = $check->get_result();
-    if ($res->num_rows === 0 || $res->fetch_assoc()['user_id'] != $_SESSION['user_id']) {
-        http_response_code(403);
-        echo json_encode(['status' => 'error', 'message' => 'Akses ditolak']);
-        $conn->close();
-        exit;
-    }
-    $conn->close();
-}
-
 $today = new DateTime();
 $today->setTime(0, 0, 0);
 $tgl_baru = new DateTime($tanggal_baru);
@@ -56,14 +42,27 @@ if ($tgl_baru <= $today) {
 
 $conn = getConnection();
 
-$cek = $conn->prepare('SELECT id, tanggal, jam, status FROM pemesanan WHERE id = ?');
-$cek->bind_param('i', $pemesanan_id);
+$role = $_SESSION['user_role'] ?? '';
+$user_id = $_SESSION['user_id'] ?? 0;
+
+$cek_sql = 'SELECT p.id, p.tanggal, p.jam, p.status FROM pemesanan p JOIN pelanggan pl ON p.pelanggan_id = pl.id WHERE p.id = ?';
+$cek_params = [$pemesanan_id];
+$cek_types = 'i';
+
+if ($role === 'user') {
+    $cek_sql .= ' AND pl.user_id = ?';
+    $cek_params[] = $user_id;
+    $cek_types .= 'i';
+}
+
+$cek = $conn->prepare($cek_sql);
+$cek->bind_param($cek_types, ...$cek_params);
 $cek->execute();
 $res_cek = $cek->get_result();
 
 if ($res_cek->num_rows === 0) {
     http_response_code(404);
-    echo json_encode(['status' => 'error', 'message' => 'Pemesanan tidak ditemukan']);
+    echo json_encode(['status' => 'error', 'message' => 'Pemesanan tidak ditemukan atau tidak memiliki akses']);
     $conn->close();
     exit;
 }
@@ -153,7 +152,6 @@ try {
             'nomor_antrian_baru' => $nomor_antrian_baru
         ]
     ]);
-
 } catch (Exception $e) {
     $conn->rollback();
     http_response_code(500);

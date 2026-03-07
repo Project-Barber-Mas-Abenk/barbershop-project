@@ -1,21 +1,22 @@
 <?php
-$title = "Login - Shift Studio";
+session_start();
+
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    header('Location: dashboard.php');
+    exit();
+}
 ?>
-
 <!DOCTYPE html>
-<html>
-
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= $title ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Shift Studio</title>
     <link rel="stylesheet" href="../assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
-
 <body>
-
     <div class="auth-container">
-
         <div class="auth-left">
             <img src="../assets/img/logo.png" alt="Shift Studio">
         </div>
@@ -25,22 +26,24 @@ $title = "Login - Shift Studio";
             <h2>Masuk ke akun Anda untuk melanjutkan pemesanan dan menikmati layanan kami.</h2>
 
             <form id="loginForm">
-                <label>Nomor Telepon</label>
-                <input type="text" name="username" placeholder="Masukkan Nomor Telepon" required>
+                <label>Email / Username Admin</label>
+                <input type="text" name="email" id="email" placeholder="Masukkan Email atau Username" required>
 
                 <label>Kata Sandi</label>
-                <input type="password" name="password" placeholder="Masukkan Kata Sandi" required>
+                <input type="password" name="password" id="password" placeholder="Masukkan Kata Sandi" required>
 
                 <div class="forgot-password">
                     <a href="forgotPassword.php">Lupa Kata Sandi?</a>
                 </div>
 
-                <button type="submit">Login</button>
+                <div id="errorMsg" style="color: #e74c3c; margin-bottom: 10px; font-size: 14px;"></div>
+
+                <button type="submit" id="submitBtn">Login</button>
             </form>
 
             <div class="divider">Atau masuk menggunakan</div>
 
-            <button class="google-btn">
+            <button class="google-btn" id="googleBtn">
                 <svg width="18" height="18" viewBox="0 0 48 48">
                     <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z" />
                     <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z" />
@@ -51,12 +54,51 @@ $title = "Login - Shift Studio";
             </button>
 
             <div class="auth-link">
-                You don't have any account? <a href="register.php">Register</a>
+                Belum punya akun? <a href="register.php">Register</a>
             </div>
         </div>
-
     </div>
 
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            errorMsg.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Memproses...';
+            
+            try {
+                const response = await fetch('../../api/auth/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    window.location.href = 'dashboard.php';
+                } else {
+                    errorMsg.textContent = data.message || 'Login gagal';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Login';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Terjadi kesalahan. Coba lagi.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
+            }
+        });
+        
+        document.getElementById('googleBtn').addEventListener('click', function() {
+            alert('Google OAuth memerlukan konfigurasi Google Client ID. Hubungi admin untuk mengaktifkan fitur ini.');
+        });
+    </script>
 </body>
-
 </html>

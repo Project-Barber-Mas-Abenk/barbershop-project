@@ -1,14 +1,16 @@
 <?php
 require_once '../config/config.php';
+
 session_start();
 
-if (empty($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+if (empty($_SESSION['logged_in'])) {
     http_response_code(401);
     echo json_encode(['status' => 'error', 'message' => 'Silakan login terlebih dahulu']);
     exit;
 }
 
-if ($_SESSION['user_role'] !== 'admin') {
+$role = $_SESSION['user_role'] ?? '';
+if ($role !== 'admin') {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'Akses ditolak. Hanya admin yang dapat mengubah status pembayaran']);
     exit;
