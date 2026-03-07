@@ -31,7 +31,6 @@ $nama = $_SESSION['user_nama'] ?? $_SESSION['admin_nama'] ?? 'User';
                 <div class="header-right">
                     <span class="status-online">● Online</span>
                     <span style="margin-right: 15px;"><?php echo htmlspecialchars($nama); ?> (<?php echo $role; ?>)</span>
-                    <button onclick="handleLogout()" style="padding: 8px 16px; background: #c0392b; color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
                 </div>
             </header>
 

@@ -7,17 +7,19 @@
             <h3>Mufadhol Abenk</h3>
         </div>
         <ul>
-            <li class="active"><a href="dashboard.php">Dashboard</a></li>
-            <li><a href="daftarBooking.php">Daftar Booking</a></li>
-            <li><a href="manajemenPayment.php">Manajemen Payment</a></li>
-            <li><a href="manajemenUser.php">Manajemen User</a></li>
-            <li><a href="laporan.php">Laporan</a></li>
-            <li><a href="pengaturan.php">Pengaturan</a></li>
+            <li class="active"><a href="dashboard.php?page=dashboard">Dashboard</a></li>
+            <li><a href="dashboard.php?page=booking">Daftar Booking</a></li>
+            <li><a href="dashboard.php?page=payment">Manajemen Payment</a></li>
+            <li><a href="dashboard.php?page=user">Manajemen User</a></li>
+            <li><a href="dashboard.php?page=laporan">Laporan</a></li>
+            <li><a href="dashboard.php?page=pengaturan">Pengaturan</a></li>
         </ul>
     </nav>
 
-    <div class="logout">
-        <a href="logout.php">Logout</a>
+    <div class="logout-btn-container">
+        <button onclick="handleLogout()"
+            class="logout-btn"
+        >Logout</button>
     </div>
 
 </div>
