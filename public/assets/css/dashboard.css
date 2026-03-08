@@ -73,15 +73,30 @@ body {
 }
 
 /* LOGOUT */
-.logout {
-    justify-content: end;
+.logout-btn-container {
     margin-top: auto;
 }
 
-.logout a {
-    color: #ff4d4d;
-    text-decoration: none;
+.logout-btn {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 6px;
+
+    background: transparent;
+    border: 1px solid rgba(212, 23, 23, 0.5);
+
+    color: rgba(212, 23, 23, 0.8);
     font-size: 14px;
+    font-weight: 500;
+
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.logout-btn:hover {
+    background: #d41717;
+    border-color: #d41717;
+    color: white;
 }
 
 /* MAIN CONTENT */
