@@ -1,12 +1,22 @@
+<!-- =========================================================
+HEADER DASHBOARD
+Data yang ditampilkan:
+- Nama user (dari session PHP)
+- Role user
+- Current time (diupdate oleh JS)
+========================================================= -->
+
 <header class="header">
 
     <div class="header-left">
         <h1>Dashboard</h1>
-        <p id="currentTime">-</p>
+        <p id="currentTime">-</p> <!-- JS akan update waktu realtime -->
     </div>
 
     <div class="header-right">
         <span class="status-online">● Online</span>
+
+        <!-- Nama dan role user dari SESSION -->
         <span style="margin-right:15px;">
             <?php echo htmlspecialchars($nama); ?> (<?php echo $role; ?>)
         </span>
@@ -14,6 +24,25 @@
 
 </header>
 
+
+
+<!-- =========================================================
+SUMMARY CARD
+Data ini HARUS di-fetch dari API booking
+
+API yang dibutuhkan:
+GET /bookings
+
+Data yang dipakai:
+- total booking
+- booking status menunggu
+- booking status dikonfirmasi
+- booking status dibatalkan
+- booking selesai
+
+Jika admin:
+- total pendapatan (status_bayar = lunas)
+========================================================= -->
 
 <section class="summary">
 
@@ -41,144 +70,217 @@
         <span class="card-info">Booking dibatalkan</span>
     </div>
 
+    <!-- Hanya muncul jika role = admin -->
     <?php if ($role === 'admin'): ?>
-        <div class="card">
-            <p>Total Pendapatan</p>
-            <h2 id="totalIncome">Rp 0</h2>
-            <span class="card-info">Dari transaksi lunas</span>
-        </div>
+
+    <div class="card">
+        <p>Total Pendapatan</p>
+        <h2 id="totalIncome">Rp 0</h2>
+        <span class="card-info">Dari transaksi lunas</span>
+    </div>
+
     <?php endif; ?>
 
 </section>
 
+
+
+<!-- =========================================================
+BOOKING TERBARU PANEL
+
+Data yang harus di-fetch:
+GET /bookings
+
+Field yang digunakan:
+- nama_pelanggan
+- nama_layanan
+- tanggal
+- jam
+- status_booking
+
+Limit:
+ambil 5 - 10 booking terbaru saja
+========================================================= -->
+
 <section class="dashboard-grid">
 
-    <div class="panel-notif">
+<div class="panel-notif">
 
-        <h3>Booking Terbaru</h3>
+<h3>Booking Terbaru</h3>
 
-        <table class="booking-table">
+<table class="booking-table">
 
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Layanan</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+<thead>
+<tr>
+<th>Nama</th>
+<th>Layanan</th>
+<th>Tanggal</th>
+<th>Status</th>
+</tr>
+</thead>
 
-            <tbody id="bookingList">
-                <tr>
-                    <td colspan="4">Memuat data...</td>
-                </tr>
-            </tbody>
+<tbody id="bookingList">
 
-        </table>
+<!--
+JS akan inject data booking di sini.
 
-    </div>
+Format row:
+
+<tr>
+<td>Nama Pelanggan</td>
+<td>Layanan</td>
+<td>Tanggal</td>
+<td class="confirmed/pending/cancel">status</td>
+</tr>
+
+-->
+
+<tr>
+<td colspan="4">Memuat data...</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
 
 </section>
 
 
+
 <script>
-    const userRole = '<?php echo $role; ?>';
 
-    loadDashboardData();
+const userRole = '<?php echo $role; ?>';
 
-    async function loadDashboardData() {
+/* =========================================================
+INIT DASHBOARD
+Load semua data dashboard dari backend
+========================================================= */
 
-        try {
+loadDashboardData();
 
-            const response = await getBookings();
 
-            if (response.status === 'success') {
 
-                const bookings = response.data || [];
+/* =========================================================
+FETCH BOOKING DATA
+Digunakan untuk:
 
-                updateStats(bookings);
+1. Summary Card
+2. Booking terbaru table
+========================================================= */
 
-                renderBookingList(bookings);
+async function loadDashboardData(){
 
-            } else {
+    try{
 
-                document.getElementById('bookingList').innerHTML =
-                    `<tr><td colspan="4">Gagal memuat data</td></tr>`;
+        const response = await getBookings();
 
-            }
+        if(response.status === 'success'){
 
-        } catch (err) {
+            const bookings = response.data || [];
+
+            updateStats(bookings);
+            renderBookingList(bookings);
+
+        }else{
 
             document.getElementById('bookingList').innerHTML =
-                `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
+            `<tr><td colspan="4">Gagal memuat data</td></tr>`;
 
         }
+
+    }catch(err){
+
+        document.getElementById('bookingList').innerHTML =
+        `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
 
     }
 
-    function updateStats(bookings) {
-
-        const total = bookings.length;
-
-        const pending =
-            bookings.filter(b => b.status_booking === 'menunggu').length;
-
-        const confirmed =
-            bookings.filter(b => b.status_booking === 'dikonfirmasi').length;
-
-        const cancelled =
-            bookings.filter(b => b.status_booking === 'dibatalkan').length;
-
-        const selesai =
-            bookings.filter(b => b.status_booking === 'selesai').length;
-
-        document.getElementById('totalBooking').textContent = total;
-        document.getElementById('pendingBooking').textContent = pending;
-        document.getElementById('confirmedBooking').textContent = confirmed + selesai;
-        document.getElementById('cancelledBooking').textContent = cancelled;
+}
 
 
-        if (userRole === 'admin') {
 
-            const income = bookings
-                .filter(b => b.status_bayar === 'lunas')
-                .reduce((sum, b) => sum + parseFloat(b.harga || 0), 0);
+/* =========================================================
+UPDATE SUMMARY CARD
 
-            document.getElementById('totalIncome').textContent =
-                formatRupiah(income);
+Data dihitung dari array bookings
+========================================================= */
 
-        }
+function updateStats(bookings){
 
-    }
+const total = bookings.length;
 
-    function renderBookingList(bookings) {
+const pending =
+bookings.filter(b => b.status_booking === 'menunggu').length;
 
-        const container = document.getElementById('bookingList');
+const confirmed =
+bookings.filter(b => b.status_booking === 'dikonfirmasi').length;
 
-        if (bookings.length === 0) {
+const cancelled =
+bookings.filter(b => b.status_booking === 'dibatalkan').length;
 
-            container.innerHTML =
-                `<tr><td colspan="4">Tidak ada booking</td></tr>`;
+const selesai =
+bookings.filter(b => b.status_booking === 'selesai').length;
 
-            return;
 
-        }
+document.getElementById('totalBooking').textContent = total;
+document.getElementById('pendingBooking').textContent = pending;
+document.getElementById('confirmedBooking').textContent = confirmed + selesai;
+document.getElementById('cancelledBooking').textContent = cancelled;
 
-        let html = "";
 
-        bookings.slice(0, 10).forEach(b => {
+/* HITUNG PENDAPATAN (admin only) */
 
-            let statusClass = "pending";
+if(userRole === 'admin'){
 
-            if (b.status_booking === "dikonfirmasi" || b.status_booking === "selesai") {
-                statusClass = "confirmed";
-            }
+const income = bookings
+.filter(b => b.status_bayar === 'lunas')
+.reduce((sum,b)=> sum + parseFloat(b.harga || 0),0);
 
-            if (b.status_booking === "dibatalkan") {
-                statusClass = "cancel";
-            }
+document.getElementById('totalIncome').textContent =
+formatRupiah(income);
 
-            html += `
+}
+
+}
+
+
+
+/* =========================================================
+RENDER BOOKING TERBARU
+
+Menampilkan max 10 booking terbaru
+========================================================= */
+
+function renderBookingList(bookings){
+
+const container = document.getElementById('bookingList');
+
+if(bookings.length === 0){
+
+container.innerHTML =
+`<tr><td colspan="4">Tidak ada booking</td></tr>`;
+
+return;
+
+}
+
+let html = "";
+
+bookings.slice(0,10).forEach(b => {
+
+let statusClass = "pending";
+
+if(b.status_booking === "dikonfirmasi" || b.status_booking === "selesai"){
+statusClass = "confirmed";
+}
+
+if(b.status_booking === "dibatalkan"){
+statusClass = "cancel";
+}
+
+html += `
 <tr>
 <td>${b.nama_pelanggan}</td>
 <td>${b.nama_layanan}</td>
@@ -189,9 +291,10 @@ ${b.status_booking}
 </tr>
 `;
 
-        });
+});
 
-        container.innerHTML = html;
+container.innerHTML = html;
 
-    }
+}
+
 </script>
