@@ -35,7 +35,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 </form>
 
                 <div class="auth-link" style="margin-top: 20px;">
-                    <a href="login.php">Kembali ke Login</a>
+                    <a href="login.php" style="text-align: end;">Kembali ke Login</a>
                 </div>
             </div>
 
