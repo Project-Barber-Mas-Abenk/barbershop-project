@@ -1,16 +1,16 @@
 <!-- =========================================================
 HEADER DASHBOARD
 Data yang ditampilkan:
-- Nama user (dari session PHP)
+- Nama user
 - Role user
-- Current time (diupdate oleh JS)
+- Current time
 ========================================================= -->
 
 <header class="header">
 
     <div class="header-left">
         <h1>Dashboard</h1>
-        <p id="currentTime">-</p> <!-- JS akan update waktu realtime -->
+        <p id="currentTime">-</p>
     </div>
 
     <div class="header-right">
@@ -23,8 +23,6 @@ Data yang ditampilkan:
     </div>
 
 </header>
-
-
 
 <!-- =========================================================
 SUMMARY CARD
@@ -73,11 +71,11 @@ Jika admin:
     <!-- Hanya muncul jika role = admin -->
     <?php if ($role === 'admin'): ?>
 
-    <div class="card">
-        <p>Total Pendapatan</p>
-        <h2 id="totalIncome">Rp 0</h2>
-        <span class="card-info">Dari transaksi lunas</span>
-    </div>
+        <div class="card">
+            <p>Total Pendapatan</p>
+            <h2 id="totalIncome">Rp 0</h2>
+            <span class="card-info">Dari transaksi lunas</span>
+        </div>
 
     <?php endif; ?>
 
@@ -104,183 +102,245 @@ ambil 5 - 10 booking terbaru saja
 
 <section class="dashboard-grid">
 
-<div class="panel-notif">
+    <!-- PANEL BOOKING -->
+    <div class="panel-notif">
 
-<h3>Booking Terbaru</h3>
+        <h3>Booking Terbaru</h3>
 
-<table class="booking-table">
+        <table class="booking-table">
 
-<thead>
-<tr>
-<th>Nama</th>
-<th>Layanan</th>
-<th>Tanggal</th>
-<th>Status</th>
-</tr>
-</thead>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Layanan</th>
+                    <th>Tanggal</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
 
-<tbody id="bookingList">
+            <tbody id="bookingList">
 
-<!--
-JS akan inject data booking di sini.
+                <tr>
+                    <td colspan="4">Memuat data...</td>
+                </tr>
 
-Format row:
+            </tbody>
 
-<tr>
-<td>Nama Pelanggan</td>
-<td>Layanan</td>
-<td>Tanggal</td>
-<td class="confirmed/pending/cancel">status</td>
-</tr>
+        </table>
 
--->
+    </div>
 
-<tr>
-<td colspan="4">Memuat data...</td>
-</tr>
 
-</tbody>
 
-</table>
+    <!-- RIGHT PANEL -->
+    <div class="grid-right">
 
-</div>
+
+        <!-- PANEL BARBER -->
+        <div class="panel">
+
+            <h3>Barber Tersedia</h3>
+
+            <ul class="notif-list" id="barberList">
+
+                <li>
+                    <div>
+                        <strong>Abenk</strong>
+                        <p>3 booking hari ini</p>
+                    </div>
+
+                    <span class="status confirmed">Available</span>
+                </li>
+
+                <li>
+                    <div>
+                        <strong>Iki</strong>
+                        <p>5 booking hari ini</p>
+                    </div>
+
+                    <span class="status pending">Busy</span>
+                </li>
+
+                <li>
+                    <div>
+                        <strong>Rudi</strong>
+                        <p>Tidak ada jadwal</p>
+                    </div>
+
+                    <span class="status cancel">Off</span>
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <!-- PANEL SERVICES -->
+        <div class="panel">
+
+            <h3>Layanan Populer</h3>
+
+            <div class="services-grid">
+
+                <div class="service-card">
+                    <h4>Haircut</h4>
+                    <p>150x booking</p>
+                </div>
+
+                <div class="service-card">
+                    <h4>Hairwash</h4>
+                    <p>120x booking</p>
+                </div>
+
+                <div class="service-card">
+                    <h4>Beard Trim</h4>
+                    <p>90x booking</p>
+                </div>
+
+                <div class="service-card">
+                    <h4>Coloring</h4>
+                    <p>60x booking</p>
+                </div>
+
+                <div class="service-card">
+                    <h4>Creambath</h4>
+                    <p>40x booking</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </section>
 
 
 
 <script>
+    const userRole = '<?php echo $role; ?>';
 
-const userRole = '<?php echo $role; ?>';
+    /* =========================================================
+    INIT DASHBOARD
+    Load semua data dashboard dari backend
+    ========================================================= */
 
-/* =========================================================
-INIT DASHBOARD
-Load semua data dashboard dari backend
-========================================================= */
+    loadDashboardData();
 
-loadDashboardData();
+    /* =========================================================
+    FETCH BOOKING DATA
+    Digunakan untuk:
 
+    1. Summary Card
+    2. Booking terbaru table
+    ========================================================= */
 
+    async function loadDashboardData() {
 
-/* =========================================================
-FETCH BOOKING DATA
-Digunakan untuk:
+        try {
 
-1. Summary Card
-2. Booking terbaru table
-========================================================= */
+            const response = await getBookings();
 
-async function loadDashboardData(){
+            if (response.status === 'success') {
 
-    try{
+                const bookings = response.data || [];
 
-        const response = await getBookings();
+                updateStats(bookings);
+                renderBookingList(bookings);
 
-        if(response.status === 'success'){
+            } else {
 
-            const bookings = response.data || [];
+                document.getElementById('bookingList').innerHTML =
+                    `<tr><td colspan="4">Gagal memuat data</td></tr>`;
 
-            updateStats(bookings);
-            renderBookingList(bookings);
+            }
 
-        }else{
+        } catch (err) {
 
             document.getElementById('bookingList').innerHTML =
-            `<tr><td colspan="4">Gagal memuat data</td></tr>`;
+                `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
 
         }
 
-    }catch(err){
+    }
 
-        document.getElementById('bookingList').innerHTML =
-        `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
+    /* =========================================================
+    UPDATE SUMMARY CARD
+
+    Data dihitung dari array bookings
+    ========================================================= */
+
+    function updateStats(bookings) {
+
+        const total = bookings.length;
+
+        const pending =
+            bookings.filter(b => b.status_booking === 'menunggu').length;
+
+        const confirmed =
+            bookings.filter(b => b.status_booking === 'dikonfirmasi').length;
+
+        const cancelled =
+            bookings.filter(b => b.status_booking === 'dibatalkan').length;
+
+        const selesai =
+            bookings.filter(b => b.status_booking === 'selesai').length;
+
+
+        document.getElementById('totalBooking').textContent = total;
+        document.getElementById('pendingBooking').textContent = pending;
+        document.getElementById('confirmedBooking').textContent = confirmed + selesai;
+        document.getElementById('cancelledBooking').textContent = cancelled;
+
+        /* HITUNG PENDAPATAN (admin only) */
+
+        if (userRole === 'admin') {
+
+            const income = bookings
+                .filter(b => b.status_bayar === 'lunas')
+                .reduce((sum, b) => sum + parseFloat(b.harga || 0), 0);
+
+            document.getElementById('totalIncome').textContent =
+                formatRupiah(income);
+
+        }
 
     }
 
-}
+    /* =========================================================
+    RENDER BOOKING TERBARU
 
+    Menampilkan max 10 booking terbaru
+    ========================================================= */
 
+    function renderBookingList(bookings) {
 
-/* =========================================================
-UPDATE SUMMARY CARD
+        const container = document.getElementById('bookingList');
 
-Data dihitung dari array bookings
-========================================================= */
+        if (bookings.length === 0) {
 
-function updateStats(bookings){
+            container.innerHTML =
+                `<tr><td colspan="4">Tidak ada booking</td></tr>`;
 
-const total = bookings.length;
+            return;
 
-const pending =
-bookings.filter(b => b.status_booking === 'menunggu').length;
+        }
 
-const confirmed =
-bookings.filter(b => b.status_booking === 'dikonfirmasi').length;
+        let html = "";
 
-const cancelled =
-bookings.filter(b => b.status_booking === 'dibatalkan').length;
+        bookings.slice(0, 10).forEach(b => {
 
-const selesai =
-bookings.filter(b => b.status_booking === 'selesai').length;
+            let statusClass = "pending";
 
+            if (b.status_booking === "dikonfirmasi" || b.status_booking === "selesai") {
+                statusClass = "confirmed";
+            }
 
-document.getElementById('totalBooking').textContent = total;
-document.getElementById('pendingBooking').textContent = pending;
-document.getElementById('confirmedBooking').textContent = confirmed + selesai;
-document.getElementById('cancelledBooking').textContent = cancelled;
+            if (b.status_booking === "dibatalkan") {
+                statusClass = "cancel";
+            }
 
-
-/* HITUNG PENDAPATAN (admin only) */
-
-if(userRole === 'admin'){
-
-const income = bookings
-.filter(b => b.status_bayar === 'lunas')
-.reduce((sum,b)=> sum + parseFloat(b.harga || 0),0);
-
-document.getElementById('totalIncome').textContent =
-formatRupiah(income);
-
-}
-
-}
-
-
-
-/* =========================================================
-RENDER BOOKING TERBARU
-
-Menampilkan max 10 booking terbaru
-========================================================= */
-
-function renderBookingList(bookings){
-
-const container = document.getElementById('bookingList');
-
-if(bookings.length === 0){
-
-container.innerHTML =
-`<tr><td colspan="4">Tidak ada booking</td></tr>`;
-
-return;
-
-}
-
-let html = "";
-
-bookings.slice(0,10).forEach(b => {
-
-let statusClass = "pending";
-
-if(b.status_booking === "dikonfirmasi" || b.status_booking === "selesai"){
-statusClass = "confirmed";
-}
-
-if(b.status_booking === "dibatalkan"){
-statusClass = "cancel";
-}
-
-html += `
+            html += `
 <tr>
 <td>${b.nama_pelanggan}</td>
 <td>${b.nama_layanan}</td>
@@ -291,10 +351,9 @@ ${b.status_booking}
 </tr>
 `;
 
-});
+        });
 
-container.innerHTML = html;
+        container.innerHTML = html;
 
-}
-
+    }
 </script>
