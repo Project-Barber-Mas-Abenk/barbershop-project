@@ -1,11 +1,3 @@
-<!-- =========================================================
-HEADER DASHBOARD
-Data yang ditampilkan:
-- Nama user
-- Role user
-- Current time
-========================================================= -->
-
 <header class="header">
 
     <div class="header-left">
@@ -24,336 +16,316 @@ Data yang ditampilkan:
 
 </header>
 
-<!-- =========================================================
-SUMMARY CARD
-Data ini HARUS di-fetch dari API booking
+<!-- ACTION BAR -->
+<div class="action-bar">
+    <button class="action-btn">
+        Admin Konfirmasi
+    </button>
+    <button class="action-btn">
+        Input Ke Dashboard
+    </button>
+    <button class="action-btn">
+        Booking Hari Ini
+    </button>
+    <button class="action-btn">
+        Redirect Ke WA Admin
+    </button>
+    <button class="action-btn action-btn--primary">
+        + Tambah Booking
+    </button>
+</div>
 
-API yang dibutuhkan:
-GET /bookings
+<!-- STATS SECTION -->
+<section class="stats-grid">
 
-Data yang dipakai:
-- total booking
-- booking status menunggu
-- booking status dikonfirmasi
-- booking status dibatalkan
-- booking selesai
-
-Jika admin:
-- total pendapatan (status_bayar = lunas)
-========================================================= -->
-
-<section class="summary">
-
-    <div class="card">
-        <p>Total Booking</p>
-        <h2 id="totalBooking">0</h2>
-        <span class="card-info">Semua booking</span>
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statBookingHariIni">0</div>
+        <div class="stat-label">Booking Hari Ini</div>
+        <div class="stat-sub">Dicatat oleh Admin</div>
     </div>
 
-    <div class="card">
-        <p>Booking Pending</p>
-        <h2 id="pendingBooking">0</h2>
-        <span class="card-info">Menunggu Konfirmasi</span>
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statBookingBesok">0</div>
+        <div class="stat-label">Booking Besok</div>
+        <div class="stat-sub">Sudah Dikonfirmasi oleh Admin</div>
     </div>
 
-    <div class="card">
-        <p>Confirmed</p>
-        <h2 id="confirmedBooking">0</h2>
-        <span class="card-info">Booking dikonfirmasi</span>
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statPelangganHariIni">0</div>
+        <div class="stat-label">Pelanggan Hari Ini</div>
+        <div class="stat-sub">Booking Tercatat</div>
     </div>
 
-    <div class="card">
-        <p>Dibatalkan</p>
-        <h2 id="cancelledBooking">0</h2>
-        <span class="card-info">Booking dibatalkan</span>
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statPelangganMinggu">0</div>
+        <div class="stat-label">Pelanggan Minggu Ini</div>
+        <div class="stat-sub" id="statMingguLalu">- vs Minggu Lalu</div>
     </div>
 
-    <!-- Hanya muncul jika role = admin -->
+    <div class="stat-card">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statPelangganBulanan">0</div>
+        <div class="stat-label">Pelanggan Bulan Ini</div>
+        <div class="stat-sub" id="statBulanLalu">- vs Bulan Lalu</div>
+    </div>
+
+    <div class="stat-card stat-card--alert">
+        <div class="stat-icon"></div>
+        <div class="stat-number" id="statBelumDicatat">0</div>
+        <div class="stat-label">Belum Dicatat</div>
+        <div class="stat-sub stat-sub--alert">Perlu Input dari WA</div>
+    </div>
+
     <?php if ($role === 'admin'): ?>
-
-        <div class="card">
-            <p>Total Pendapatan</p>
-            <h2 id="totalIncome">Rp 0</h2>
-            <span class="card-info">Dari transaksi lunas</span>
+        <div class="stat-card">
+            <div class="stat-icon"></div>
+            <div class="stat-number" id="totalIncome">0</div>
+            <div class="stat-label">Pendapatan Total</div>
+            <div class="stat-sub">Dari Semua Transaksi</div>
         </div>
-
     <?php endif; ?>
 
 </section>
 
-
-
-<!-- =========================================================
-BOOKING TERBARU PANEL
-
-Data yang harus di-fetch:
-GET /bookings
-
-Field yang digunakan:
-- nama_pelanggan
-- nama_layanan
-- tanggal
-- jam
-- status_booking
-
-Limit:
-ambil 5 - 10 booking terbaru saja
-========================================================= -->
-
-<section class="dashboard-grid">
-
-    <!-- PANEL BOOKING -->
-    <div class="panel-notif">
-
-        <h3>Booking Terbaru</h3>
-
-        <table class="booking-table">
-
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Layanan</th>
-                    <th>Tanggal</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-
-            <tbody id="bookingList">
-
-                <tr>
-                    <td colspan="4">Memuat data...</td>
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-
-    <!-- RIGHT PANEL -->
-    <div class="grid-right">
-
-
-        <!-- PANEL BARBER -->
-        <div class="panel">
-
-            <h3>Barber Tersedia</h3>
-
-            <ul class="notif-list" id="barberList">
-
-                <li>
-                    <div>
-                        <strong>Abenk</strong>
-                        <p>3 booking hari ini</p>
-                    </div>
-
-                    <span class="status confirmed">Available</span>
-                </li>
-
-                <li>
-                    <div>
-                        <strong>Iki</strong>
-                        <p>5 booking hari ini</p>
-                    </div>
-
-                    <span class="status pending">Busy</span>
-                </li>
-
-                <li>
-                    <div>
-                        <strong>Rudi</strong>
-                        <p>Tidak ada jadwal</p>
-                    </div>
-
-                    <span class="status cancel">Off</span>
-                </li>
-
-            </ul>
-
+<!-- MAIN DASHBOARD -->
+<div class="dashboard-main-grid">
+    <!-- LEFT: Jadwal Hari Ini -->
+    <div class="panel panel--jadwal">
+        <div class="panel-header">
+            <div>
+                <h3 class="panel-title">Jadwal Hari Ini</h3>
+                <p class="panel-subtitle" id="jadwalTanggal">-</p>
+                <p class="panel-note">Dicatat oleh Admin setelah Konfirmasi dari WA</p>
+            </div>
+            <div class="panel-header-right">
+                <div class="antrian-badge" id="jadwalAntrian">0 Antrian</div>
+                <button class="btn-catat">+ Catat</button>
+            </div>
         </div>
 
+        <div class="booking-list" id="bokingList">
+            <tr>
+                <td colspan="4">Memuat data...</td>
+            </tr>
+        </div>
+    </div>
 
-        <!-- PANEL SERVICES -->
-        <div class="panel">
+    <!-- RIGHT COLUMN -->
+    <div class="right-column">
 
-            <h3>Layanan Populer</h3>
-
-            <div class="services-grid">
-
-                <div class="service-card">
-                    <h4>Haircut</h4>
-                    <p>150x booking</p>
+        <!-- JADWAL BESOK -->
+        <div class="panel panel--besok">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-tittle">Jadwal Besok</h3>
+                    <p class="panel-subtitle" id="besokTanggal">-</p>
                 </div>
-
-                <div class="service-card">
-                    <h4>Hairwash</h4>
-                    <p>120x booking</p>
-                </div>
-
-                <div class="service-card">
-                    <h4>Beard Trim</h4>
-                    <p>90x booking</p>
-                </div>
-
-                <div class="service-card">
-                    <h4>Coloring</h4>
-                    <p>60x booking</p>
-                </div>
-
-                <div class="service-card">
-                    <h4>Creambath</h4>
-                    <p>40x booking</p>
-                </div>
-
+                <div class="antrian-badge" id="besokAntrian">0 Antrian</div>
             </div>
 
+            <div class="booking-list" id="besokList">
+                <div class="empty-state">Tidak ada jadwal</div>
+            </div>
+        </div>
+
+        <!-- BARBER -->
+        <div class="panel panel--barber">
+            <div class="panel-header">
+                <h3 class="panel-title">Barber Hari Ini</h3>
+                <span class="maks-label">Maks 4 booking</span>
+            </div>
+
+            <div id="barberLoadList">
+                <div class="empty-state">Memuat data...</div>
+            </div>
         </div>
 
     </div>
-
-</section>
-
-
+</div>
 
 <script>
     const userRole = '<?php echo $role; ?>';
 
-    /* =========================================================
-    INIT DASHBOARD
-    Load semua data dashboard dari backend
-    ========================================================= */
+    // ========================================================
+    // INIT
+    // ========================================================
+    initDashboard();
 
-    loadDashboardData();
+    function initDashboard() {
+        setDateLabels();
+        loadDashboardData();
+    }
 
-    /* =========================================================
-    FETCH BOOKING DATA
-    Digunakan untuk:
+    // SET DATE LABELS
+    function setDateLabels() {
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const now = new Date();
 
-    1. Summary Card
-    2. Booking terbaru table
-    ========================================================= */
+        const dayName = days[now.getDay()];
+        const dayNum = now.getDate();
+        const monthName = months[now.getMonth()];
+        const year = now.getFullYear();
 
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        document.getElementById('currentDate').textContent =
+            `${dayName}, ${dayNum} ${monthName} ${year}`;
+
+        document.getElementById('jadwalTanggal').textContent =
+            `${dayName}, ${dayNum} ${monthName} ${year}`;
+
+        document.getElementById('besokTanggal').textContent =
+            `${days[tomorrow.getDay()]}, ${tomorrow.getDate()} ${months[tomorrow.getMonth()]} ${tomorrow.getFullYear()}` +
+            ' · Sudah dikonfirmasi via WA';
+    }
+
+    // LOAD DASHBOARD DATA
     async function loadDashboardData() {
-
         try {
-
             const response = await getBookings();
 
             if (response.status === 'success') {
-
                 const bookings = response.data || [];
-
                 updateStats(bookings);
-                renderBookingList(bookings);
-
+                renderJadwalHariIni(bookings);
+                renderJadwalBesok(bookings);
+                renderBebanBarber(bookings);
             } else {
-
                 document.getElementById('bookingList').innerHTML =
-                    `<tr><td colspan="4">Gagal memuat data</td></tr>`;
-
+                    `<div class="empty-state">Gagal memuat data</div>`;
             }
-
         } catch (err) {
-
             document.getElementById('bookingList').innerHTML =
-                `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
-
+                `<div class="empty-state">Error: ${err.message}</div>`;
         }
-
     }
 
-    /* =========================================================
-    UPDATE SUMMARY CARD
-
-    Data dihitung dari array bookings
-    ========================================================= */
-
+    // UPDATE STATISTICS
     function updateStats(bookings) {
+        const today = new Date().toISOString().slice(0, 10);
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
-        const total = bookings.length;
+        const todayBookings = bookings.filter(b => b.tanggal === today);
+        const tomorrowBookings = bookings.filter(b => b.tanggal === tomorrow);
 
-        const pending =
-            bookings.filter(b => b.status_booking === 'menunggu').length;
+        document.getElementById('statBookingHariIni').textContent = todayBookings.length;
+        document.getElementById('statBookingBesok').textContent = tomorrowBookings.length;
+        document.getElementById('statPelangganHariIni').textContent = todayBookings.length;
 
-        const confirmed =
-            bookings.filter(b => b.status_booking === 'dikonfirmasi').length;
+        // Weekly / monthly (semua booking sebagai placeholder)
+        document.getElementById('statPelangganMinggu').textContent = bookings.length;
+        document.getElementById('statPelangganBulan').textContent = bookings.length;
+        document.getElementById('statBelumDicatat').textContent =
+            bookings.filter(b => !b.nama_pelanggan).length;
 
-        const cancelled =
-            bookings.filter(b => b.status_booking === 'dibatalkan').length;
-
-        const selesai =
-            bookings.filter(b => b.status_booking === 'selesai').length;
-
-
-        document.getElementById('totalBooking').textContent = total;
-        document.getElementById('pendingBooking').textContent = pending;
-        document.getElementById('confirmedBooking').textContent = confirmed + selesai;
-        document.getElementById('cancelledBooking').textContent = cancelled;
-
-        /* HITUNG PENDAPATAN (admin only) */
+        document.getElementById('jadwalAntrian').textContent = todayBookings.length + ' Antrian';
+        document.getElementById('besokAntrian').textContent = tomorrowBookings.length + ' Antrian';
 
         if (userRole === 'admin') {
-
             const income = bookings
                 .filter(b => b.status_bayar === 'lunas')
                 .reduce((sum, b) => sum + parseFloat(b.harga || 0), 0);
-
-            document.getElementById('totalIncome').textContent =
-                formatRupiah(income);
-
+            document.getElementById('totalIncome').textContent = formatRupiah(income);
         }
-
     }
 
-    /* =========================================================
-    RENDER BOOKING TERBARU
-
-    Menampilkan max 10 booking terbaru
-    ========================================================= */
-
-    function renderBookingList(bookings) {
-
+    // RENDER JADWAL HARI INI
+    function renderJadwalHariIni(bookings) {
+        const today = new Date().toISOString().slice(0, 10);
+        const filtered = bookings.filter(b => b.tanggal === today);
         const container = document.getElementById('bookingList');
 
-        if (bookings.length === 0) {
-
-            container.innerHTML =
-                `<tr><td colspan="4">Tidak ada booking</td></tr>`;
-
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="empty-state">Tidak ada jadwal hari ini</div>`;
             return;
-
         }
 
-        let html = "";
+        container.innerHTML = filtered.map(b => buildBookingItem(b)).join('');
+    }
 
-        bookings.slice(0, 10).forEach(b => {
+    // RENDER JADWAL BESOK
+    function renderJadwalBesok(bookings) {
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+        const filtered = bookings.filter(b => b.tanggal === tomorrow);
+        const container = document.getElementById('besokList');
 
-            let statusClass = "pending";
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="empty-state">Tidak ada jadwal besok</div>`;
+            return;
+        }
 
-            if (b.status_booking === "dikonfirmasi" || b.status_booking === "selesai") {
-                statusClass = "confirmed";
-            }
+        container.innerHTML = filtered.map(b => buildBookingItem(b)).join('');
+    }
 
-            if (b.status_booking === "dibatalkan") {
-                statusClass = "cancel";
-            }
+    // BUILD BOOKING ITEM HTML
+    function buildBookingItem(b) {
+        let statusClass = 'status--pending';
+        let statusText = b.status_booking || 'menunggu';
 
-            html += `
-<tr>
-<td>${b.nama_pelanggan}</td>
-<td>${b.nama_layanan}</td>
-<td>${formatTanggal(b.tanggal)} ${b.jam}</td>
-<td class="${statusClass}">
-${b.status_booking}
-</td>
-</tr>
-`;
+        if (b.status_booking === 'dikonfirmasi' || b.status_booking === 'selesai') {
+            statusClass = 'status--selesai';
+        } else if (b.status_booking === 'proses') {
+            statusClass = 'status--proses';
+        } else if (b.status_booking === 'dibatalkan') {
+            statusClass = 'status--batal';
+        }
 
+        const initials = (b.nama_pelanggan || '?').substring(0, 2).toUpperCase();
+
+        return `
+        <div class="booking-item">
+            <div class="booking-time">${b.jam || '00:00'}</div>
+            <div class="booking-avatar">${initials}</div>
+            <div class="booking-info">
+                <div class="booking-name">${b.nama_pelanggan || '-'}</div>
+                <div class="booking-detail">${b.nama_layanan || '-'}</div>
+                <div class="booking-barber">Barber : ${b.nama_barber || '-'}</div>
+            </div>
+            <div class="booking-status ${statusClass}">
+                ${statusClass === 'status--selesai' ? '✓ ' : statusClass === 'status--proses' ? '● ' : '⏳ '}${statusText}
+            </div>
+        </div>`;
+    }
+
+    // RENDER BEBAN BARBER
+    function renderBebanBarber(bookings) {
+        const today = new Date().toISOString().slice(0, 10);
+        const todayB = bookings.filter(b => b.tanggal === today);
+        const container = document.getElementById('barberLoadList');
+
+        // Group by barber
+        const barberMap = {};
+        todayB.forEach(b => {
+            const name = b.nama_barber || 'Unknown';
+            barberMap[name] = (barberMap[name] || 0) + 1;
         });
 
-        container.innerHTML = html;
+        const entries = Object.entries(barberMap);
 
+        if (entries.length === 0) {
+            container.innerHTML = `<div class="empty-state">Tidak ada data barber</div>`;
+            return;
+        }
+
+        const maxLoad = 4;
+        container.innerHTML = entries.map(([name, count]) => {
+            const pct = Math.min((count / maxLoad) * 100, 100);
+            return `
+            <div class="barber-load-item">
+                <div class="barber-load-header">
+                    <span class="barber-load-name">${name}</span>
+                    <span class="barber-load-count">${count}/${maxLoad}</span>
+                </div>
+                <div class="barber-load-bar-track">
+                    <div class="barber-load-bar-fill" style="width:${pct}%"></div>
+                </div>
+            </div>`;
+        }).join('');
     }
 </script>
