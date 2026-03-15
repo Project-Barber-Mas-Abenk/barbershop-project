@@ -1,0 +1,54 @@
+# ============================================================================
+# Apache Security Configuration for Barbershop Project
+# ============================================================================
+# [SECURITY] File ini berisi konfigurasi keamanan untuk Apache
+# Pastikan mod_rewrite dan mod_headers sudah diaktifkan di Apache
+# ============================================================================
+
+# Protect sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(sql|log|ini|bak|config|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Disable directory browsing
+Options -Indexes
+
+# Protect config directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Block access to sensitive directories
+    RewriteRule ^config/ - [F,L]
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^database/ - [F,L]
+    
+    # Block access to .htaccess and .htpasswd
+    RewriteRule ^\.ht - [F,L]
+</IfModule>
+
+# Security Headers (tambahan dari PHP)
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Disable server signature
+ServerSignature Off
+
+# Limit request body size (10MB)
+LimitRequestBody 10485760
+
+# Enable PHP security settings via php_flag (jika diizinkan)
+<IfModule mod_php.c>
+    php_flag display_errors off
+    php_flag log_errors on
+    php_value error_log logs/php_errors.log
+</IfModule>

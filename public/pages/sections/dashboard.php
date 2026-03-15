@@ -148,7 +148,20 @@
        CONFIG
     ============================================================ */
     const userRole = '<?php echo $role; ?>';
-    const DUMMY_MODE = true; // Set false saat BE sudah siap
+    const DUMMY_MODE = false; // Set false saat BE sudah siap
+
+    /* ============================================================
+       API HELPER
+    ============================================================ */
+    function getBookings() {
+        return fetch('../../api/booking/get_bookings.php')
+            .then(res => res.json());
+    }
+
+    function getStats() {
+        return fetch('../../api/dashboard/stats.php')
+            .then(res => res.json());
+    }
 
     /* ============================================================
        DUMMY DATA — kontrak struktur data FE ↔ BE
@@ -320,22 +333,14 @@
     ============================================================ */
     function loadDashboardData() {
 
-        /* --- DUMMY --- */
-        if (DUMMY_MODE) {
-            const bookings = getDummyBookings();
-            updateStats(bookings);
-            renderJadwalHariIni(bookings);
-            renderJadwalBesok(bookings);
-            renderBebanBarber(bookings);
-            return;
-        }
-
         /* --- REAL (kalau BE ready, ubah DUMMY_MODE (line 151) ke false) --- */
-        getBookings()
-            .then(function(response) {
-                if (response.status === 'success') {
-                    const bookings = response.data || [];
-                    updateStats(bookings);
+        Promise.all([getBookings(), getStats()])
+            .then(function([bookingRes, statRes]) {
+                if (bookingRes.status === 'success' && statRes.status === 'success') {
+                    const bookings = bookingRes.data || [];
+                    const stats = statRes.data || {};
+                    
+                    updateStats(bookings, stats);
                     renderJadwalHariIni(bookings);
                     renderJadwalBesok(bookings);
                     renderBebanBarber(bookings);
@@ -352,10 +357,8 @@
 
     /* ============================================================
        UPDATE STATS
-       TODO BE: sediakan field total_minggu_ini, total_minggu_lalu,
-                total_bulan_ini, total_bulan_lalu di response
     ============================================================ */
-    function updateStats(bookings) {
+    function updateStats(bookings, stats) {
         const today = new Date().toISOString().slice(0, 10);
         const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
@@ -365,35 +368,22 @@
         const tomorrowB = bookings.filter(function(b) {
             return b.tanggal === tomorrow;
         });
-        const belum = bookings.filter(function(b) {
-            return !b.nama_pelanggan;
-        }).length;
 
-        // TODO BE: ganti bookings.length dengan data minggu/bulan yang benar
-        document.getElementById('statBookingHariIni').textContent = todayB.length;
-        document.getElementById('statBookingBesok').textContent = tomorrowB.length;
-        document.getElementById('statPelangganHariIni').textContent = todayB.length;
-        document.getElementById('statPelangganMinggu').textContent = bookings.length;
-        document.getElementById('statPelangganBulan').textContent = bookings.length;
-        document.getElementById('statBelumDicatat').textContent = belum;
+        document.getElementById('statBookingHariIni').textContent = stats.today_booking || 0;
+        document.getElementById('statBookingBesok').textContent = stats.tomorrow_booking || 0;
+        document.getElementById('statPelangganHariIni').textContent = stats.today_customers || 0;
+        document.getElementById('statPelangganMinggu').textContent = stats.weekly_customers || 0;
+        document.getElementById('statPelangganBulan').textContent = stats.monthly_customers || 0;
+        document.getElementById('statBelumDicatat').textContent = stats.unrecorded || 0;
 
-        if (DUMMY_MODE) {
-            document.getElementById('statMingguVs').textContent = '+12% vs Minggu Lalu';
-            document.getElementById('statBulanVs').textContent = '+54% vs Bulan Lalu';
-        }
+        document.getElementById('statMingguVs').textContent = 'Minggu Ini';
+        document.getElementById('statBulanVs').textContent = 'Bulan Ini';
 
-        document.getElementById('jadwalAntrian').textContent = todayB.length + ' Antrian';
-        document.getElementById('besokAntrian').textContent = tomorrowB.length + ' Antrian';
+        document.getElementById('jadwalAntrian').textContent = (stats.today_booking || 0) + ' Antrian';
+        document.getElementById('besokAntrian').textContent = (stats.tomorrow_booking || 0) + ' Antrian';
 
         if (userRole === 'admin') {
-            const income = bookings
-                .filter(function(b) {
-                    return b.status_bayar === 'lunas';
-                })
-                .reduce(function(sum, b) {
-                    return sum + parseFloat(b.harga || 0);
-                }, 0);
-            document.getElementById('totalIncome').textContent = formatRupiah(income);
+            document.getElementById('totalIncome').textContent = formatRupiah(stats.total_income || 0);
         }
     }
 
