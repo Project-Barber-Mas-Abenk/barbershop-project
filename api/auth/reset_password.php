@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Reset Password API
  * Barbershop Project - Backend
@@ -71,8 +72,10 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 }
 
 // [SECURITY] Validasi OTP dari session
-if (empty($_SESSION['reset_email']) || $_SESSION['reset_email'] !== $email || 
-    empty($_SESSION['reset_otp']) || $_SESSION['reset_otp'] !== $otp) {
+if (
+    empty($_SESSION['reset_email']) || $_SESSION['reset_email'] !== $email ||
+    empty($_SESSION['reset_otp']) || $_SESSION['reset_otp'] !== $otp
+) {
     $_SESSION[$rate_key]['count']++;
     $_SESSION[$rate_key]['last_attempt'] = time();
     http_response_code(401);
@@ -86,7 +89,7 @@ if (time() - $_SESSION['reset_otp_time'] > 300) {
     unset($_SESSION['reset_email']);
     unset($_SESSION['reset_otp']);
     unset($_SESSION['reset_otp_time']);
-    
+
     http_response_code(401);
     echo json_encode(['status' => 'error', 'message' => 'Kode OTP sudah kadaluarsa']);
     exit;
@@ -129,4 +132,3 @@ if ($stmt->affected_rows > 0) {
 }
 
 $conn->close();
-?>

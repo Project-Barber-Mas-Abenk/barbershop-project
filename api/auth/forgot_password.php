@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Forgot Password API
  * Barbershop Project - Backend
@@ -184,22 +185,24 @@ $conn->close();
 // EMAIL SENDING FUNCTIONS
 // ============================================================================
 
-function sendOTPEmail($to_email, $nama_user, $otp, &$error_message = '') {
+function sendOTPEmail($to_email, $nama_user, $otp, &$error_message = '')
+{
     $subject = 'Kode OTP Reset Password - Shift Studio';
-    
+
     $body = buildEmailTemplate($nama_user, $otp);
     $alt_body = "Halo {$nama_user},\n\nKode OTP Anda: {$otp}\n\nKode ini berlaku selama 5 menit.\n\nShift Studio Barbershop";
-    
+
     // Coba kirim dengan PHPMailer
     if (sendWithPHPMailer($to_email, $nama_user, $subject, $body, $alt_body, $error_message)) {
         return true;
     }
-    
+
     // Fallback ke PHP mail()
     return sendWithMailFunction($to_email, $subject, $body, $alt_body);
 }
 
-function buildEmailTemplate($nama_user, $otp) {
+function buildEmailTemplate($nama_user, $otp)
+{
     return <<<HTML
 <!DOCTYPE html>
 <html>
@@ -241,21 +244,22 @@ function buildEmailTemplate($nama_user, $otp) {
 HTML;
 }
 
-function sendWithPHPMailer($to_email, $nama_user, $subject, $body, $alt_body, &$error_message = '') {
+function sendWithPHPMailer($to_email, $nama_user, $subject, $body, $alt_body, &$error_message = '')
+{
     $phpmailer_file = __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php';
-    
+
     if (!file_exists($phpmailer_file)) {
         $error_message = 'PHPMailer library tidak ditemukan. Jalankan: composer install';
         return false;
     }
-    
+
     try {
         require_once __DIR__ . '/../../vendor/phpmailer/phpmailer/src/Exception.php';
-        require_once __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php';
         require_once __DIR__ . '/../../vendor/phpmailer/phpmailer/src/SMTP.php';
-        
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
-        
+        require_once __DIR__ . '/../../vendor/phpmailer/phpmailer/src/PHPMailer.php';
+
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+
         $mail->isSMTP();
         $mail->Host       = SMTP_HOST;
         $mail->SMTPAuth   = true;
@@ -263,23 +267,22 @@ function sendWithPHPMailer($to_email, $nama_user, $subject, $body, $alt_body, &$
         $mail->Password   = SMTP_PASSWORD;
         $mail->SMTPSecure = SMTP_SECURE;
         $mail->Port       = SMTP_PORT;
-        
+
         // [DEBUG] Enable SMTP debugging untuk troubleshooting
         // Ganti ke 2 untuk verbose output, 0 untuk production
-        $mail->SMTPDebug  = 0; 
+        $mail->SMTPDebug  = 0;
         $mail->Debugoutput = 'error_log';
-        
+
         $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
         $mail->addAddress($to_email, $nama_user);
-        
+
         $mail->isHTML(true);
         $mail->Subject = $subject;
         $mail->Body    = $body;
         $mail->AltBody = $alt_body;
-        
+
         $mail->send();
         return true;
-        
     } catch (Exception $e) {
         $error_message = $e->getMessage();
         error_log("[BARBERSHOP ERROR] PHPMailer Error: " . $e->getMessage());
@@ -287,14 +290,15 @@ function sendWithPHPMailer($to_email, $nama_user, $subject, $body, $alt_body, &$
     }
 }
 
-function sendWithMailFunction($to_email, $subject, $body, $alt_body) {
+function sendWithMailFunction($to_email, $subject, $body, $alt_body)
+{
     $boundary = md5(time());
-    
+
     $headers = "From: " . SMTP_FROM_NAME . " <" . SMTP_FROM_EMAIL . ">\r\n";
     $headers .= "Reply-To: " . SMTP_FROM_EMAIL . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: multipart/alternative; boundary=\"{$boundary}\"\r\n";
-    
+
     $message = "--{$boundary}\r\n";
     $message .= "Content-Type: text/plain; charset=UTF-8\r\n\r\n";
     $message .= $alt_body . "\r\n\r\n";
@@ -302,7 +306,6 @@ function sendWithMailFunction($to_email, $subject, $body, $alt_body) {
     $message .= "Content-Type: text/html; charset=UTF-8\r\n\r\n";
     $message .= $body . "\r\n\r\n";
     $message .= "--{$boundary}--";
-    
+
     return mail($to_email, $subject, $message, $headers);
 }
-?>

@@ -70,41 +70,34 @@
         <div class="stat-sub stat-sub--alert">Perlu Input dari WA</div>
     </div>
 
-    <?php if ($role === 'admin'): ?>
-        <div class="stat-card">
-            <div class="stat-icon">💰</div>
-            <div class="stat-number" id="totalIncome">0</div>
-            <div class="stat-label">Pendapatan Total</div>
-            <div class="stat-sub">Dari Semua Transaksi</div>
-        </div>
-    <?php endif; ?>
-
 </section>
 
 <!-- MAIN DASHBOARD -->
 <div class="dashboard-main-grid">
 
-    <!-- LEFT: Jadwal Hari Ini -->
-    <div class="panel panel--jadwal">
-        <div class="panel-header">
-            <div>
-                <h3 class="panel-title">Jadwal Hari Ini</h3>
-                <p class="panel-subtitle" id="jadwalTanggal">-</p>
-                <p class="panel-note">Dicatat oleh Admin setelah Konfirmasi dari WA</p>
+    <!-- LEFT COLUMN -->
+    <div class="left-column">
+
+        <!--: Jadwal Hari Ini -->
+        <div class="panel panel--jadwal">
+            <div class="panel-header">
+                <div>
+                    <h3 class="panel-title">Jadwal Hari Ini</h3>
+                    <p class="panel-subtitle" id="jadwalTanggal">-</p>
+                    <p class="panel-note">Dicatat oleh Admin setelah Konfirmasi dari WA</p>
+                </div>
+                <div class="panel-header-right">
+                    <div class="antrian-badge" id="jadwalAntrian">0 Antrian</div>
+                    <button class="btn-catat">+ Catat</button>
+                </div>
             </div>
-            <div class="panel-header-right">
-                <div class="antrian-badge" id="jadwalAntrian">0 Antrian</div>
-                <button class="btn-catat">+ Catat</button>
+
+            <div class="booking-list" id="bookingList">
+                <div class="empty-state">Memuat data...</div>
             </div>
         </div>
 
-        <div class="booking-list" id="bookingList">
-            <div class="empty-state">Memuat data...</div>
-        </div>
-    </div>
-
-    <!-- RIGHT COLUMN -->
-    <div class="right-column">
+        <!-- RIGHT COLUMN -->
 
         <!-- JADWAL BESOK -->
         <div class="panel panel--besok">
@@ -120,6 +113,30 @@
                 <div class="empty-state">Tidak ada jadwal</div>
             </div>
         </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-column">
+        <!--: Income -->
+        <?php if ($role === 'admin'): ?>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number" id="incomeToday">0</div>
+                <div class="stat-label">Pendapatan Hari Ini</div>
+                <div class="stat-sub">Dari Semua Transaksi</div>
+            </div>
+        <?php endif; ?>
+
+        <!--: Income Total -->
+
+        <?php if ($role === 'admin'): ?>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-number" id="totalIncome">0</div>
+                <div class="stat-label">Pendapatan Total Keseluruhan</div>
+                <div class="stat-sub">Dari Semua Transaksi</div>
+            </div>
+        <?php endif; ?>
 
         <!-- BEBAN BARBER -->
         <div class="panel panel--barber">
@@ -132,376 +149,379 @@
                 <div class="empty-state">Memuat data...</div>
             </div>
         </div>
-
     </div>
-</div>
 
 
-<script>
-    if (typeof formatRupiah === 'undefined') {
-        function formatRupiah(angka) {
-            return 'Rp ' + Number(angka).toLocaleString('id-ID');
+
+    <script>
+        if (typeof formatRupiah === 'undefined') {
+            function formatRupiah(angka) {
+                return 'Rp ' + Number(angka).toLocaleString('id-ID');
+            }
         }
-    }
 
-    /* ============================================================
-       CONFIG
-    ============================================================ */
-    const userRole = '<?php echo $role; ?>';
-    const DUMMY_MODE = false; // Set false saat BE sudah siap
+        /* ============================================================
+           CONFIG
+        ============================================================ */
+        const userRole = '<?php echo $role; ?>';
+        const DUMMY_MODE = true; // Set false saat BE sudah siap
 
-    /* ============================================================
-       API HELPER
-    ============================================================ */
-    function getBookings() {
-        return fetch('../../api/booking/get_bookings.php')
-            .then(res => res.json());
-    }
+        /* ============================================================
+           DUMMY DATA — kontrak struktur data FE ↔ BE
+           BE wajib mengembalikan array dengan field yang sama persis.
 
-    function getStats() {
-        return fetch('../../api/dashboard/stats.php')
-            .then(res => res.json());
-    }
+           Field per objek:
+             id             : number   — ID unik booking
+             nama_pelanggan : string   — Nama pelanggan
+             nama_layanan   : string   — Nama layanan yang dipesan
+             nama_barber    : string   — Nama barber yang ditugaskan
+             tanggal        : string   — Format YYYY-MM-DD
+             jam            : string   — Format HH:MM-HH:MM
+             status_booking : string   — "menunggu" | "proses" | "selesai" | "dikonfirmasi" | "dibatalkan"
+             status_bayar   : string   — "lunas" | "belum_lunas" | "pending"
+             harga          : number   — Nominal harga layanan
+        ============================================================ */
+        function getDummyBookings() {
+            const today = new Date().toISOString().slice(0, 10);
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
-    /* ============================================================
-       DUMMY DATA — kontrak struktur data FE ↔ BE
-       BE wajib mengembalikan array dengan field yang sama persis.
+            // Data dummy harus mencakup booking hari ini dan besok, dengan variasi status
+            return [
+                /* ---- HARI INI ---- */
+                {
+                    id: 1,
+                    nama_pelanggan: 'Reza Firmansyah',
+                    nama_layanan: 'Haircut + Cuci',
+                    nama_barber: 'Abeng',
+                    tanggal: today,
+                    jam: '08:00-09:00',
+                    status_booking: 'selesai',
+                    status_bayar: 'lunas',
+                    harga: 45000
+                },
+                {
+                    id: 2,
+                    nama_pelanggan: 'Dimas Pratama',
+                    nama_layanan: 'Haircut Booking',
+                    nama_barber: 'Abeng',
+                    tanggal: today,
+                    jam: '08:00-09:00',
+                    status_booking: 'selesai',
+                    status_bayar: 'lunas',
+                    harga: 35000
+                },
+                {
+                    id: 3,
+                    nama_pelanggan: 'Yoga Aditya',
+                    nama_layanan: 'Cukur + Beard',
+                    nama_barber: 'Abeng',
+                    tanggal: today,
+                    jam: '09:00-10:00',
+                    status_booking: 'proses',
+                    status_bayar: 'belum_lunas',
+                    harga: 55000
+                },
+                {
+                    id: 4,
+                    nama_pelanggan: 'Fajar Nugroho',
+                    nama_layanan: 'Haircut Booking',
+                    nama_barber: 'Abeng',
+                    tanggal: today,
+                    jam: '09:00-10:00',
+                    status_booking: 'menunggu',
+                    status_bayar: 'belum_lunas',
+                    harga: 35000
+                },
+                /* ---- BESOK ---- */
+                {
+                    id: 5,
+                    nama_pelanggan: 'Budi Santoso',
+                    nama_layanan: 'Haircut + Coloring',
+                    nama_barber: 'Abeng',
+                    tanggal: tomorrow,
+                    jam: '10:00-11:00',
+                    status_booking: 'menunggu',
+                    status_bayar: 'belum_lunas',
+                    harga: 120000
+                },
+                {
+                    id: 6,
+                    nama_pelanggan: 'Andi Wijaya',
+                    nama_layanan: 'Haircut Booking',
+                    nama_barber: 'Abeng',
+                    tanggal: tomorrow,
+                    jam: '08:00-09:00',
+                    status_booking: 'dikonfirmasi',
+                    status_bayar: 'belum_lunas',
+                    harga: 35000
+                },
+                {
+                    id: 7,
+                    nama_pelanggan: 'Hendra Kusuma',
+                    nama_layanan: 'Cukur + Beard',
+                    nama_barber: 'Abeng',
+                    tanggal: tomorrow,
+                    jam: '09:00-10:00',
+                    status_booking: 'dikonfirmasi',
+                    status_bayar: 'belum_lunas',
+                    harga: 55000
+                },
+                {
+                    id: 8,
+                    nama_pelanggan: 'Surya Mahendra',
+                    nama_layanan: 'Haircut Booking',
+                    nama_barber: 'Abeng',
+                    tanggal: tomorrow,
+                    jam: '10:00-11:00',
+                    status_booking: 'menunggu',
+                    status_bayar: 'belum_lunas',
+                    harga: 35000
+                },
+            ];
+        }
 
-       Field per objek:
-         id             : number   — ID unik booking
-         nama_pelanggan : string   — Nama pelanggan
-         nama_layanan   : string   — Nama layanan yang dipesan
-         nama_barber    : string   — Nama barber yang ditugaskan
-         tanggal        : string   — Format YYYY-MM-DD
-         jam            : string   — Format HH:MM-HH:MM
-         status_booking : string   — "menunggu" | "proses" | "selesai" | "dikonfirmasi" | "dibatalkan"
-         status_bayar   : string   — "lunas" | "belum_lunas" | "pending"
-         harga          : number   — Nominal harga layanan
-    ============================================================ */
-    function getDummyBookings() {
-        const today = new Date().toISOString().slice(0, 10);
-        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+        document.addEventListener('DOMContentLoaded', function() {
+            initDashboard();
+        });
 
-        return [
-            /* ---- HARI INI ---- */
-            {
-                id: 1,
-                nama_pelanggan: 'Reza Firmansyah',
-                nama_layanan: 'Haircut + Cuci',
-                nama_barber: 'Abeng',
-                tanggal: today,
-                jam: '08:00-09:00',
-                status_booking: 'selesai',
-                status_bayar: 'lunas',
-                harga: 45000
-            },
-            {
-                id: 2,
-                nama_pelanggan: 'Dimas Pratama',
-                nama_layanan: 'Haircut Booking',
-                nama_barber: 'Abeng',
-                tanggal: today,
-                jam: '08:00-09:00',
-                status_booking: 'selesai',
-                status_bayar: 'lunas',
-                harga: 35000
-            },
-            {
-                id: 3,
-                nama_pelanggan: 'Yoga Aditya',
-                nama_layanan: 'Cukur + Beard',
-                nama_barber: 'Abeng',
-                tanggal: today,
-                jam: '09:00-10:00',
-                status_booking: 'proses',
-                status_bayar: 'belum_lunas',
-                harga: 55000
-            },
-            {
-                id: 4,
-                nama_pelanggan: 'Fajar Nugroho',
-                nama_layanan: 'Haircut Booking',
-                nama_barber: 'Rizal',
-                tanggal: today,
-                jam: '09:00-10:00',
-                status_booking: 'menunggu',
-                status_bayar: 'belum_lunas',
-                harga: 35000
-            },
-            {
-                id: 5,
-                nama_pelanggan: 'Budi Santoso',
-                nama_layanan: 'Haircut + Coloring',
-                nama_barber: 'Rizal',
-                tanggal: today,
-                jam: '10:00-11:00',
-                status_booking: 'menunggu',
-                status_bayar: 'belum_lunas',
-                harga: 120000
-            },
-            {
-                id: 9,
-                nama_pelanggan: 'Gilang Saputra',
-                nama_layanan: 'Haircut + Cuci',
-                nama_barber: 'Rizal',
-                tanggal: today,
-                jam: '11:00-12:00',
-                status_booking: 'selesai',
-                status_bayar: 'lunas',
-                harga: 45000
-            },
-            {
-                id: 10,
-                nama_pelanggan: 'Arif Hidayat',
-                nama_layanan: 'Haircut Booking',
-                nama_barber: 'Abeng',
-                tanggal: today,
-                jam: '13:00-14:00',
-                status_booking: 'dibatalkan',
-                status_bayar: 'belum_lunas',
-                harga: 35000
-            },
-            /* ---- BESOK ---- */
-            {
-                id: 6,
-                nama_pelanggan: 'Andi Wijaya',
-                nama_layanan: 'Haircut Booking',
-                nama_barber: 'Abeng',
-                tanggal: tomorrow,
-                jam: '08:00-09:00',
-                status_booking: 'dikonfirmasi',
-                status_bayar: 'belum_lunas',
-                harga: 35000
-            },
-            {
-                id: 7,
-                nama_pelanggan: 'Hendra Kusuma',
-                nama_layanan: 'Cukur + Beard',
-                nama_barber: 'Abeng',
-                tanggal: tomorrow,
-                jam: '09:00-10:00',
-                status_booking: 'dikonfirmasi',
-                status_bayar: 'belum_lunas',
-                harga: 55000
-            },
-            {
-                id: 8,
-                nama_pelanggan: 'Surya Mahendra',
-                nama_layanan: 'Haircut Booking',
-                nama_barber: 'Rizal',
-                tanggal: tomorrow,
-                jam: '10:00-11:00',
-                status_booking: 'menunggu',
-                status_bayar: 'belum_lunas',
-                harga: 35000
-            },
-        ];
-    }
+        function initDashboard() {
+            setDateLabels();
+            loadDashboardData();
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        initDashboard();
-    });
+        /* ============================================================
+           DATE LABELS
+        ============================================================ */
+        function setDateLabels() {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const now = new Date();
 
-    function initDashboard() {
-        setDateLabels();
-        loadDashboardData();
-    }
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
 
-    /* ============================================================
-       DATE LABELS
-    ============================================================ */
-    function setDateLabels() {
-        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        const now = new Date();
+            document.getElementById('jadwalTanggal').textContent =
+                `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('besokTanggal').textContent =
+                `${days[tomorrow.getDay()]}, ${tomorrow.getDate()} ${months[tomorrow.getMonth()]} ${tomorrow.getFullYear()}` +
+                ' — Sudah dikonfirmasi via WA';
+        }
 
-        document.getElementById('jadwalTanggal').textContent =
-            `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        /* ============================================================
+           LOAD DATA
+           DUMMY_MODE=true  → getDummyBookings() langsung, tanpa fetch
+           DUMMY_MODE=false → getBookings() dari BE
+        ============================================================ */
+        function loadDashboardData() {
 
-        document.getElementById('besokTanggal').textContent =
-            `${days[tomorrow.getDay()]}, ${tomorrow.getDate()} ${months[tomorrow.getMonth()]} ${tomorrow.getFullYear()}` +
-            ' — Sudah dikonfirmasi via WA';
-    }
+            /* --- DUMMY --- */
+            if (DUMMY_MODE) {
+                const bookings = getDummyBookings();
+                updateStats(bookings);
+                renderJadwalHariIni(bookings);
+                renderJadwalBesok(bookings);
+                renderBebanBarber(bookings);
+                return;
+            }
 
-    /* ============================================================
-       LOAD DATA
-       DUMMY_MODE=true  → getDummyBookings() langsung, tanpa fetch
-       DUMMY_MODE=false → getBookings() dari BE
-    ============================================================ */
-    function loadDashboardData() {
-
-        /* --- REAL (kalau BE ready, ubah DUMMY_MODE (line 151) ke false) --- */
-        Promise.all([getBookings(), getStats()])
-            .then(function([bookingRes, statRes]) {
-                if (bookingRes.status === 'success' && statRes.status === 'success') {
-                    const bookings = bookingRes.data || [];
-                    const stats = statRes.data || {};
-                    
-                    updateStats(bookings, stats);
-                    renderJadwalHariIni(bookings);
-                    renderJadwalBesok(bookings);
-                    renderBebanBarber(bookings);
-                } else {
+            /* --- REAL (kalau BE ready, ubah DUMMY_MODE (line 151) ke false) --- */
+            getBookings()
+                .then(function(response) {
+                    if (response.status === 'success') {
+                        const bookings = response.data || [];
+                        updateStats(bookings);
+                        renderJadwalHariIni(bookings);
+                        renderJadwalBesok(bookings);
+                        renderBebanBarber(bookings);
+                    } else {
+                        document.getElementById('bookingList').innerHTML =
+                            '<div class="empty-state">Gagal memuat data</div>';
+                    }
+                })
+                .catch(function(err) {
                     document.getElementById('bookingList').innerHTML =
-                        '<div class="empty-state">Gagal memuat data</div>';
-                }
-            })
-            .catch(function(err) {
-                document.getElementById('bookingList').innerHTML =
-                    '<div class="empty-state">Error: ' + err.message + '</div>';
+                        '<div class="empty-state">Error: ' + err.message + '</div>';
+                });
+        }
+
+        /* ============================================================
+           UPDATE STATS
+           TODO BE: sediakan field total_minggu_ini, total_minggu_lalu,
+                    total_bulan_ini, total_bulan_lalu di response
+        ============================================================ */
+        function updateStats(bookings) {
+            const today = new Date().toISOString().slice(0, 10);
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+
+            const todayB = bookings.filter(function(b) {
+                return b.tanggal === today;
             });
-    }
+            const tomorrowB = bookings.filter(function(b) {
+                return b.tanggal === tomorrow;
+            });
+            const belum = bookings.filter(function(b) {
+                return !b.nama_pelanggan;
+            }).length;
 
-    /* ============================================================
-       UPDATE STATS
-    ============================================================ */
-    function updateStats(bookings, stats) {
-        const today = new Date().toISOString().slice(0, 10);
-        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+            // TODO BE: ganti bookings.length dengan data minggu/bulan yang benar
+            document.getElementById('statBookingHariIni').textContent = todayB.length;
+            document.getElementById('statBookingBesok').textContent = tomorrowB.length;
+            document.getElementById('statPelangganHariIni').textContent = todayB.length;
+            document.getElementById('statPelangganMinggu').textContent = bookings.length;
+            document.getElementById('statPelangganBulan').textContent = bookings.length;
+            document.getElementById('statBelumDicatat').textContent = belum;
 
-        const todayB = bookings.filter(function(b) {
-            return b.tanggal === today;
-        });
-        const tomorrowB = bookings.filter(function(b) {
-            return b.tanggal === tomorrow;
-        });
+            if (DUMMY_MODE) {
+                document.getElementById('statMingguVs').textContent = '+12% vs Minggu Lalu';
+                document.getElementById('statBulanVs').textContent = '+54% vs Bulan Lalu';
+            }
 
-        document.getElementById('statBookingHariIni').textContent = stats.today_booking || 0;
-        document.getElementById('statBookingBesok').textContent = stats.tomorrow_booking || 0;
-        document.getElementById('statPelangganHariIni').textContent = stats.today_customers || 0;
-        document.getElementById('statPelangganMinggu').textContent = stats.weekly_customers || 0;
-        document.getElementById('statPelangganBulan').textContent = stats.monthly_customers || 0;
-        document.getElementById('statBelumDicatat').textContent = stats.unrecorded || 0;
+            document.getElementById('jadwalAntrian').textContent = todayB.length + ' Antrian';
+            document.getElementById('besokAntrian').textContent = tomorrowB.length + ' Antrian';
 
-        document.getElementById('statMingguVs').textContent = 'Minggu Ini';
-        document.getElementById('statBulanVs').textContent = 'Bulan Ini';
+            if (userRole === 'admin') {
+                const income = bookings
+                    .filter(function(b) {
+                        return b.status_bayar === 'lunas';
+                    })
+                    .reduce(function(sum, b) {
+                        return sum + parseFloat(b.harga || 0);
+                    }, 0);
+                document.getElementById('incomeToday').textContent = formatRupiah(income);
+            } else {
+                document.getElementById('incomeToday').textContent = '—';
+            }
 
-        document.getElementById('jadwalAntrian').textContent = (stats.today_booking || 0) + ' Antrian';
-        document.getElementById('besokAntrian').textContent = (stats.tomorrow_booking || 0) + ' Antrian';
-
-        if (userRole === 'admin') {
-            document.getElementById('totalIncome').textContent = formatRupiah(stats.total_income || 0);
-        }
-    }
-
-    /* ============================================================
-       RENDER JADWAL HARI INI
-    ============================================================ */
-    function renderJadwalHariIni(bookings) {
-        const today = new Date().toISOString().slice(0, 10);
-        const filtered = bookings.filter(function(b) {
-            return b.tanggal === today;
-        });
-        const container = document.getElementById('bookingList');
-
-        if (!container) return;
-
-        if (filtered.length === 0) {
-            container.innerHTML = '<div class="empty-state">Tidak ada jadwal hari ini</div>';
-            return;
-        }
-
-        container.innerHTML = filtered.map(buildBookingItem).join('');
-    }
-
-    /* ============================================================
-       RENDER JADWAL BESOK
-    ============================================================ */
-    function renderJadwalBesok(bookings) {
-        const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
-        const filtered = bookings.filter(function(b) {
-            return b.tanggal === tomorrow;
-        });
-        const container = document.getElementById('besokList');
-
-        if (!container) return;
-
-        if (filtered.length === 0) {
-            container.innerHTML = '<div class="empty-state">Tidak ada jadwal besok</div>';
-            return;
+            if (userRole === 'admin') {
+                const totalIncome = bookings
+                    .filter(function(b) {
+                        return b.status_bayar === 'lunas';
+                    })
+                    .reduce(function(sum, b) {
+                        return sum + parseFloat(b.harga || 0);
+                    }, 0);
+                document.getElementById('totalIncome').textContent = formatRupiah(totalIncome);
+            } else {
+                document.getElementById('totalIncome').textContent = '—';
+            }
         }
 
-        container.innerHTML = filtered.map(buildBookingItem).join('');
-    }
+        /* ============================================================
+           RENDER JADWAL HARI INI
+        ============================================================ */
+        function renderJadwalHariIni(bookings) {
+            const today = new Date().toISOString().slice(0, 10);
+            const filtered = bookings.filter(function(b) {
+                return b.tanggal === today;
+            });
+            const container = document.getElementById('bookingList');
 
-    /* ============================================================
-       BUILD BOOKING ITEM HTML
-    ============================================================ */
-    function buildBookingItem(b) {
-        var statusClass = 'status--pending';
-        var statusText = b.status_booking || 'menunggu';
+            if (!container) return;
 
-        if (b.status_booking === 'dikonfirmasi' || b.status_booking === 'selesai') {
-            statusClass = 'status--selesai';
-        } else if (b.status_booking === 'proses') {
-            statusClass = 'status--proses';
-        } else if (b.status_booking === 'dibatalkan') {
-            statusClass = 'status--batal';
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada jadwal hari ini</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(buildBookingItem).join('');
         }
 
-        var icons = {
-            'status--selesai': '&#10003;',
-            'status--proses': '&#9679;',
-            'status--batal': '&#10005;',
-            'status--pending': '&#9203;'
-        };
-        var icon = icons[statusClass] || '&#9203;';
-        var initials = (b.nama_pelanggan || '?').substring(0, 2).toUpperCase();
+        /* ============================================================
+           RENDER JADWAL BESOK
+        ============================================================ */
+        function renderJadwalBesok(bookings) {
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+            const filtered = bookings.filter(function(b) {
+                return b.tanggal === tomorrow;
+            });
+            const container = document.getElementById('besokList');
 
-        return '<div class="booking-item">' +
-            '<div class="booking-time">' + (b.jam || '00:00') + '</div>' +
-            '<div class="booking-avatar">' + initials + '</div>' +
-            '<div class="booking-info">' +
-            '<div class="booking-name">' + (b.nama_pelanggan || '-') + '</div>' +
-            '<div class="booking-detail">' + (b.nama_layanan || '-') + '</div>' +
-            '<div class="booking-barber">Barber : ' + (b.nama_barber || '-') + '</div>' +
-            '</div>' +
-            '<div class="booking-status ' + statusClass + '">' + icon + ' ' + statusText + '</div>' +
-            '</div>';
-    }
+            if (!container) return;
 
-    /* ============================================================
-       RENDER BEBAN BARBER
-    ============================================================ */
-    function renderBebanBarber(bookings) {
-        const today = new Date().toISOString().slice(0, 10);
-        const todayB = bookings.filter(function(b) {
-            return b.tanggal === today;
-        });
-        const container = document.getElementById('barberLoadList');
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada jadwal besok</div>';
+                return;
+            }
 
-        if (!container) return;
-
-        var barberMap = {};
-        todayB.forEach(function(b) {
-            var name = b.nama_barber || 'Unknown';
-            barberMap[name] = (barberMap[name] || 0) + 1;
-        });
-
-        var entries = Object.entries(barberMap);
-
-        if (entries.length === 0) {
-            container.innerHTML = '<div class="empty-state">Tidak ada data barber</div>';
-            return;
+            container.innerHTML = filtered.map(buildBookingItem).join('');
         }
 
-        var maxLoad = 4;
-        container.innerHTML = entries.map(function(entry) {
-            var name = entry[0];
-            var count = entry[1];
-            var pct = Math.min((count / maxLoad) * 100, 100);
-            return '<div class="barber-load-item">' +
-                '<div class="barber-load-header">' +
-                '<span class="barber-load-name">' + name + '</span>' +
-                '<span class="barber-load-count">' + count + '/' + maxLoad + '</span>' +
+        /* ============================================================
+           BUILD BOOKING ITEM HTML
+        ============================================================ */
+        function buildBookingItem(b) {
+            var statusClass = 'status--pending';
+            var statusText = b.status_booking || 'menunggu';
+
+            if (b.status_booking === 'dikonfirmasi' || b.status_booking === 'selesai') {
+                statusClass = 'status--selesai';
+            } else if (b.status_booking === 'proses') {
+                statusClass = 'status--proses';
+            } else if (b.status_booking === 'dibatalkan') {
+                statusClass = 'status--batal';
+            }
+
+            var icons = {
+                'status--selesai': '&#10003;',
+                'status--proses': '&#9679;',
+                'status--batal': '&#10005;',
+                'status--pending': '&#9203;'
+            };
+            var icon = icons[statusClass] || '&#9203;';
+            var initials = (b.nama_pelanggan || '?').substring(0, 2).toUpperCase();
+
+            return '<div class="booking-item">' +
+                '<div class="booking-time">' + (b.jam || '00:00') + '</div>' +
+                '<div class="booking-avatar">' + initials + '</div>' +
+                '<div class="booking-info">' +
+                '<div class="booking-name">' + (b.nama_pelanggan || '-') + '</div>' +
+                '<div class="booking-detail">' + (b.nama_layanan || '-') + '</div>' +
+                '<div class="booking-barber">Barber : ' + (b.nama_barber || '-') + '</div>' +
                 '</div>' +
-                '<div class="barber-load-bar-track">' +
-                '<div class="barber-load-bar-fill" style="width:' + pct + '%"></div>' +
-                '</div>' +
+                '<div class="booking-status ' + statusClass + '">' + icon + ' ' + statusText + '</div>' +
                 '</div>';
-        }).join('');
-    }
-</script>
+        }
+
+        /* ============================================================
+           RENDER BEBAN BARBER
+        ============================================================ */
+        function renderBebanBarber(bookings) {
+            const today = new Date().toISOString().slice(0, 10);
+            const todayB = bookings.filter(function(b) {
+                return b.tanggal === today;
+            });
+            const container = document.getElementById('barberLoadList');
+
+            if (!container) return;
+
+            var barberMap = {};
+            todayB.forEach(function(b) {
+                var name = b.nama_barber || 'Unknown';
+                barberMap[name] = (barberMap[name] || 0) + 1;
+            });
+
+            var entries = Object.entries(barberMap);
+
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="empty-state">Tidak ada data barber</div>';
+                return;
+            }
+
+            var maxLoad = 4;
+            container.innerHTML = entries.map(function(entry) {
+                var name = entry[0];
+                var count = entry[1];
+                var pct = Math.min((count / maxLoad) * 100, 100);
+                return '<div class="barber-load-item">' +
+                    '<div class="barber-load-header">' +
+                    '<span class="barber-load-name">' + name + '</span>' +
+                    '<span class="barber-load-count">' + count + '/' + maxLoad + '</span>' +
+                    '</div>' +
+                    '<div class="barber-load-bar-track">' +
+                    '<div class="barber-load-bar-fill" style="width:' + pct + '%"></div>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        }
+    </script>
