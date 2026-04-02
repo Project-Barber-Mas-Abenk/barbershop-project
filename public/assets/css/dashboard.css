@@ -253,7 +253,6 @@ breadcrumb span {
   margin-bottom: 28px;
 }
 
-/* Collapse to 3 columns on medium screens */
 @media (max-width: 1400px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -266,15 +265,12 @@ breadcrumb span {
   }
 }
 
-/* Stat card */
 .stat-card {
   background: linear-gradient(145deg, #161616, #111);
   border: 1px solid #1f1f1f;
   border-radius: 14px;
   padding: 20px 18px;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: border-color 0.2s ease, transform 0.2s ease;
   cursor: default;
 }
 
@@ -310,7 +306,6 @@ breadcrumb span {
   opacity: 0.8;
 }
 
-/* Alert variant */
 .stat-card--alert .stat-number {
   color: #ff9f43;
 }
@@ -336,7 +331,7 @@ breadcrumb span {
 }
 
 /* =============================================================
-   PANEL  (shared base)
+   PANEL
 ============================================================= */
 .panel {
   background: #111;
@@ -409,7 +404,7 @@ breadcrumb span {
 }
 
 /* =============================================================
-   BOOKING LIST  (shared between jadwal hari ini & besok)
+   BOOKING LIST
 ============================================================= */
 .booking-list {
   display: flex;
@@ -482,7 +477,6 @@ breadcrumb span {
   margin-top: 2px;
 }
 
-/* Status badges */
 .booking-status {
   font-size: 12px;
   font-weight: 600;
@@ -593,7 +587,7 @@ breadcrumb span {
 }
 
 /* =============================================================
-   LEGACY  (kept for backward compatibility with summary section)
+   LEGACY
 ============================================================= */
 .summary {
   display: grid;
@@ -645,9 +639,6 @@ breadcrumb span {
   color: #d4a017;
 }
 
-/* =============================================================
-   STATUS TABLE COLORS  (preserved)
-============================================================= */
 .confirmed {
   color: #1bd89b;
   font-weight: 600;
@@ -664,8 +655,8 @@ breadcrumb span {
 }
 
 /* ==============================================================
-    BOOKINGS SECTION
-================================================================*/
+   BOOKINGS SECTION (legacy wrap)
+================================================================ */
 .bookings-wrap {
   margin: 20px;
   padding: 20px;
@@ -673,16 +664,16 @@ breadcrumb span {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .bookings-wrap h2 {
   margin-bottom: 16px;
   font-size: 18px;
   color: #333;
 }
+
 /* ==============================================================
    BOOKING PAGE
 ================================================================ */
-
-/* Toolbar: search + filter row */
 .booking-toolbar {
   display: flex;
   align-items: center;
@@ -764,7 +755,6 @@ breadcrumb span {
   color: #fff;
 }
 
-/* Summary chips row */
 .booking-summary-row {
   display: flex;
   gap: 12px;
@@ -800,7 +790,6 @@ breadcrumb span {
   font-weight: 500;
 }
 
-/* Table header row */
 .btable-header {
   display: flex;
   align-items: center;
@@ -820,7 +809,6 @@ breadcrumb span {
   letter-spacing: 0.5px;
 }
 
-/* Table data row */
 .btable-row {
   display: flex;
   align-items: center;
@@ -840,7 +828,6 @@ breadcrumb span {
   background: #111;
 }
 
-/* Column widths — same for header and rows */
 .btable-col--no        { width: 32px;  flex-shrink: 0; font-size: 12px; color: #555; }
 .btable-col--pelanggan { flex: 2;      min-width: 0; display: flex; align-items: center; gap: 10px; }
 .btable-col--layanan   { flex: 2;      min-width: 0; }
@@ -850,7 +837,6 @@ breadcrumb span {
 .btable-col--status    { width: 120px; flex-shrink: 0; }
 .btable-col--aksi      { width: 90px;  flex-shrink: 0; }
 
-/* Pelanggan cell */
 .row-avatar {
   width: 34px;
   height: 34px;
@@ -883,7 +869,6 @@ breadcrumb span {
   margin-top: 2px;
 }
 
-/* Layanan cell */
 .row-layanan {
   font-size: 13px;
   color: #ccc;
@@ -899,7 +884,6 @@ breadcrumb span {
   margin-top: 2px;
 }
 
-/* Barber badge */
 .row-barber-badge {
   display: inline-block;
   background: rgba(212, 160, 23, 0.1);
@@ -912,7 +896,6 @@ breadcrumb span {
   white-space: nowrap;
 }
 
-/* Waktu cell */
 .row-tanggal {
   font-size: 12px;
   color: #ccc;
@@ -925,7 +908,6 @@ breadcrumb span {
   margin-top: 2px;
 }
 
-/* Bayar badge */
 .bayar-badge {
   font-size: 11px;
   font-weight: 600;
@@ -946,7 +928,6 @@ breadcrumb span {
   border: 1px solid rgba(255, 77, 77, 0.18);
 }
 
-/* Aksi buttons */
 .row-aksi-group {
   display: flex;
   gap: 6px;
@@ -988,7 +969,6 @@ breadcrumb span {
   background: rgba(255, 77, 77, 0.08);
 }
 
-/* Pagination */
 .btable-pagination {
   display: flex;
   align-items: center;
@@ -1025,4 +1005,157 @@ breadcrumb span {
 .page-info {
   font-size: 13px;
   color: #666;
+}
+
+/* ==============================================================
+   LAYANAN PAGE
+================================================================ */
+.layanan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .layanan-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .layanan-grid { grid-template-columns: 1fr; }
+}
+
+.layanan-card {
+  background: #0f0f0f;
+  border: 1px solid #1f1f1f;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
+}
+
+.layanan-card:hover {
+  border-color: #d4a017;
+  transform: translateY(-2px);
+}
+
+.layanan-card__icon {
+  font-size: 22px;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.layanan-card__nama {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.layanan-card__durasi {
+  font-size: 12px;
+  color: #666;
+}
+
+.layanan-card__harga {
+  font-size: 18px;
+  font-weight: 800;
+  color: #d4a017;
+  margin-top: 4px;
+}
+
+.layanan-card__desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.layanan-card__divider {
+  height: 1px;
+  background: #1f1f1f;
+  margin: 10px 0 8px;
+}
+
+.layanan-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.layanan-btn {
+  flex: 1;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.layanan-btn--edit {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+  color: #ccc;
+}
+
+.layanan-btn--edit:hover {
+  border-color: #d4a017;
+  color: #d4a017;
+}
+
+.layanan-btn--hapus {
+  background: rgba(255, 77, 77, 0.08);
+  border-color: rgba(255, 77, 77, 0.25);
+  color: #ff6b6b;
+}
+
+.layanan-btn--hapus:hover {
+  background: rgba(255, 77, 77, 0.15);
+  border-color: #ff4d4d;
+  color: #ff4d4d;
+}
+
+.layanan-card--add {
+  border-style: dashed;
+  border-color: #2a2a2a;
+  background: transparent;
+  cursor: pointer;
+  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+}
+
+.layanan-card--add:hover {
+  border-color: #d4a017;
+  background: rgba(212, 160, 23, 0.04);
+}
+
+.layanan-card__add-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.layanan-card--add:hover .layanan-card__add-inner {
+  opacity: 0.8;
+}
+
+.layanan-card__add-icon {
+  font-size: 28px;
+  font-weight: 300;
+  color: #888;
+  line-height: 1;
+}
+
+.layanan-card__add-label {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
 }
