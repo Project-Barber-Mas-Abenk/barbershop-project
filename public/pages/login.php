@@ -16,6 +16,11 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+    <!-- [GOOGLE OAUTH] Hidden container untuk Google Sign-In -->
+    <div id="g_id_onload" data-client_id="39389480506-kf3ce7tlju7tg646tr9240rjuiidj7tu.apps.googleusercontent.com" data-context="signin" data-ux_mode="popup" data-callback="handleGoogleCredentialResponse" data-auto_prompt="false"></div>
+    
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
     <div class="auth-container">
         <div class="auth-left">
             <img src="../assets/img/logo.png" alt="Shift Studio">
@@ -97,8 +102,50 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         });
         
         document.getElementById('googleBtn').addEventListener('click', function() {
-            alert('Google OAuth memerlukan konfigurasi Google Client ID. Hubungi admin untuk mengaktifkan fitur ini.');
+            // [GOOGLE OAUTH] Trigger Google One Tap/Popup saat button diklik
+            if (typeof google !== 'undefined' && google.accounts) {
+                google.accounts.id.prompt();
+            } else {
+                alert('Google OAuth belum siap. Pastikan Google script sudah dimuat.');
+            }
         });
+        
+        // [GOOGLE OAUTH] Handler untuk response dari Google
+        function handleGoogleCredentialResponse(response) {
+            // Decode JWT token dari Google
+            const jwt = response.credential;
+            const base64Url = jwt.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            const payload = JSON.parse(jsonPayload);
+            
+            const googleData = {
+                email: payload.email,
+                nama: payload.name,
+                google_id: payload.sub,
+                no_hp: ''
+            };
+            
+            // Kirim ke backend
+            fetch('../../api/auth/google_login.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(googleData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = 'dashboard.php';
+                } else {
+                    document.getElementById('errorMsg').textContent = data.message || 'Google login gagal';
+                }
+            })
+            .catch(err => {
+                document.getElementById('errorMsg').textContent = 'Terjadi kesalahan saat login dengan Google.';
+            });
+        }
     </script>
 </body>
 </html>

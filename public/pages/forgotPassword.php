@@ -122,7 +122,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 });
             });
 
-            document.getElementById("phoneForm").addEventListener("submit", function(e) {
+            document.getElementById("phoneForm").addEventListener("submit", async function(e) {
                 e.preventDefault();
                 const email = document.getElementById("email").value.trim();
                 const errorMsg = document.getElementById("errorMsg");
@@ -132,11 +132,26 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Mengirim...';
 
-                setTimeout(() => {
-                    alert('Fitur reset password via email belum tersedia. Silakan hubungi admin.');
+                try {
+                    const response = await fetch('../../api/auth/forgot_password.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email })
+                    });
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        showStep(stepOtp);
+                    } else {
+                        errorMsg.textContent = data.message || 'Gagal mengirim email';
+                    }
+                } catch (err) {
+                    errorMsg.textContent = 'Terjadi kesalahan. Coba lagi.';
+                } finally {
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Kirim';
-                }, 1000);
+                }
             });
 
             document.getElementById("otpForm").addEventListener("submit", function(e) {
@@ -157,11 +172,18 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 showStep(stepReset);
             });
 
-            document.getElementById("resetForm").addEventListener("submit", function(e) {
+            document.getElementById("resetForm").addEventListener("submit", async function(e) {
                 e.preventDefault();
+                const email = document.getElementById("email").value.trim();
+                let otpCode = "";
+                otpInputs.forEach(input => {
+                    otpCode += input.value;
+                });
+                
                 const newPass = document.getElementById("new_password").value;
                 const confirmPass = document.getElementById("confirm_password").value;
                 const resetError = document.getElementById("resetError");
+                const resetBtn = document.getElementById("resetBtn");
 
                 if (newPass.length < 6) {
                     resetError.textContent = "Password minimal 6 karakter";
@@ -173,8 +195,29 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                     return;
                 }
 
-                alert('Password berhasil diubah! Silakan login.');
-                window.location.href = "login.php";
+                resetBtn.disabled = true;
+                resetBtn.textContent = 'Memproses...';
+
+                try {
+                    const response = await fetch('../../api/auth/reset_password.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp: otpCode, new_password: newPass })
+                    });
+                    const data = await response.json();
+                    
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        window.location.href = "login.php";
+                    } else {
+                        resetError.textContent = data.message || 'Gagal mengatur ulang kata sandi';
+                    }
+                } catch (err) {
+                    resetError.textContent = 'Terjadi kesalahan. Coba lagi.';
+                } finally {
+                    resetBtn.disabled = false;
+                    resetBtn.textContent = 'Reset Kata Sandi';
+                }
             });
 
             document.getElementById("resendOtp").addEventListener("click", function(e) {

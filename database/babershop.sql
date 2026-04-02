@@ -10,6 +10,7 @@ DROP TABLE IF EXISTS pemesanan;
 DROP TABLE IF EXISTS kuota;
 DROP TABLE IF EXISTS pelanggan;
 DROP TABLE IF EXISTS layanan;
+DROP TABLE IF EXISTS barber;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS admin;
 
@@ -29,6 +30,13 @@ CREATE TABLE users (
     no_hp VARCHAR(20),
     google_id VARCHAR(100),
     role ENUM('admin','user') DEFAULT 'user',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE barber (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama VARCHAR(100) NOT NULL,
+    status ENUM('aktif','nonaktif') DEFAULT 'aktif',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -58,13 +66,15 @@ CREATE TABLE pemesanan (
     id INT AUTO_INCREMENT PRIMARY KEY,
     pelanggan_id INT NOT NULL,
     layanan_id INT NOT NULL,
+    barber_id INT,
     tanggal DATE NOT NULL,
     jam TIME NOT NULL,
     status ENUM('menunggu','dikonfirmasi','selesai','dibatalkan') 
         NOT NULL DEFAULT 'menunggu',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (pelanggan_id) REFERENCES pelanggan(id),
-    FOREIGN KEY (layanan_id) REFERENCES layanan(id)
+    FOREIGN KEY (layanan_id) REFERENCES layanan(id),
+    FOREIGN KEY (barber_id) REFERENCES barber(id)
 );
 
 CREATE TABLE pembayaran (
@@ -93,6 +103,8 @@ INSERT INTO layanan (nama, harga) VALUES
 ('Warnain Rambut', 300000),
 ('Highlight Rambut', 300000),
 ('Booking Potong Rambut', 50000);
+
+INSERT INTO barber (nama) VALUES ('Abeng'), ('Abeng');
 
 INSERT INTO admin (username, password, nama) VALUES
 ('admin', '$2y$10$f5x8RovfMH91lpMAAs1/GuECkZemJJel7woxKvGIUIhvAJMocVqfC', 'Mas Abenk');
