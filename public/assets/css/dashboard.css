@@ -679,350 +679,165 @@ breadcrumb span {
   color: #333;
 }
 /* ==============================================================
-   BOOKING PAGE
+   LAYANAN PAGE
 ================================================================ */
 
-/* Toolbar: search + filter row */
-.booking-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+/* Grid: 2–3 kolom responsif */
+.layanan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
 
-.booking-search {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex: 1;
-  min-width: 220px;
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 10px;
-  padding: 0 14px;
-  transition: border-color 0.2s ease;
+@media (max-width: 1200px) {
+  .layanan-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-.booking-search:focus-within {
-  border-color: #d4a017;
+@media (max-width: 700px) {
+  .layanan-grid { grid-template-columns: 1fr; }
 }
 
-.search-icon {
-  font-size: 14px;
-  opacity: 0.5;
-  flex-shrink: 0;
-}
-
-.search-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #fff;
-  font-size: 13px;
-  font-family: "Poppins", sans-serif;
-  padding: 10px 0;
-}
-
-.search-input::placeholder {
-  color: #555;
-}
-
-.booking-filter-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.filter-select {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  color: #ccc;
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
-  padding: 9px 32px 9px 14px;
-  cursor: pointer;
-  transition: border-color 0.2s ease;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-}
-
-.filter-select:focus,
-.filter-select:hover {
-  border-color: #d4a017;
-  color: #fff;
-}
-
-.filter-select option {
-  background: #1a1a1a;
-  color: #fff;
-}
-
-/* Summary chips row */
-.booking-summary-row {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.bsum-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #111;
+/* Service card */
+.layanan-card {
+  background: #0f0f0f;
   border: 1px solid #1f1f1f;
-  border-radius: 10px;
-  padding: 10px 18px;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  cursor: default;
 }
 
-.bsum-num {
-  font-size: 20px;
-  font-weight: 800;
-  color: #d4a017;
+.layanan-card:hover {
+  border-color: #d4a017;
+  transform: translateY(-2px);
+}
+
+/* Icon */
+.layanan-card__icon {
+  font-size: 22px;
+  margin-bottom: 6px;
   line-height: 1;
 }
 
-.bsum-num--pending { color: #ffd600; }
-.bsum-num--proses  { color: #6aa0ff; }
-.bsum-num--selesai { color: #1bd89b; }
-.bsum-num--batal   { color: #ff4d4d; }
+/* Nama layanan */
+.layanan-card__nama {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+}
 
-.bsum-label {
+/* Durasi */
+.layanan-card__durasi {
   font-size: 12px;
   color: #666;
-  font-weight: 500;
 }
 
-/* Table header row */
-.btable-header {
-  display: flex;
-  align-items: center;
-  padding: 10px 16px;
-  background: #0d0d0d;
-  border: 1px solid #1f1f1f;
-  border-radius: 10px;
-  margin-bottom: 8px;
-  gap: 12px;
-}
-
-.btable-header .btable-col {
-  font-size: 11px;
-  font-weight: 700;
-  color: #555;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* Table data row */
-.btable-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: #0f0f0f;
-  border: 1px solid #1f1f1f;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-
-.btable-row:last-child { margin-bottom: 0; }
-
-.btable-row:hover {
-  border-color: #2a2a2a;
-  background: #111;
-}
-
-/* Column widths — same for header and rows */
-.btable-col--no        { width: 32px;  flex-shrink: 0; font-size: 12px; color: #555; }
-.btable-col--pelanggan { flex: 2;      min-width: 0; display: flex; align-items: center; gap: 10px; }
-.btable-col--layanan   { flex: 2;      min-width: 0; }
-.btable-col--barber    { flex: 1;      min-width: 80px; }
-.btable-col--waktu     { flex: 1.5;    min-width: 100px; }
-.btable-col--bayar     { width: 90px;  flex-shrink: 0; }
-.btable-col--status    { width: 120px; flex-shrink: 0; }
-.btable-col--aksi      { width: 90px;  flex-shrink: 0; }
-
-/* Pelanggan cell */
-.row-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
-  color: #ccc;
-  font-size: 12px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.row-pelanggan-info { min-width: 0; }
-
-.row-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.row-hp {
-  font-size: 11px;
-  color: #555;
-  margin-top: 2px;
-}
-
-/* Layanan cell */
-.row-layanan {
-  font-size: 13px;
-  color: #ccc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.row-harga {
-  font-size: 11px;
+/* Harga */
+.layanan-card__harga {
+  font-size: 18px;
+  font-weight: 800;
   color: #d4a017;
-  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* Deskripsi */
+.layanan-card__desc {
+  font-size: 12px;
+  color: #666;
+  line-height: 1.5;
   margin-top: 2px;
 }
 
-/* Barber badge */
-.row-barber-badge {
-  display: inline-block;
-  background: rgba(212, 160, 23, 0.1);
-  border: 1px solid rgba(212, 160, 23, 0.2);
-  color: #d4a017;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
+/* Divider */
+.layanan-card__divider {
+  height: 1px;
+  background: #1f1f1f;
+  margin: 10px 0 8px;
 }
 
-/* Waktu cell */
-.row-tanggal {
-  font-size: 12px;
-  color: #ccc;
-  font-weight: 500;
-}
-
-.row-jam {
-  font-size: 11px;
-  color: #555;
-  margin-top: 2px;
-}
-
-/* Bayar badge */
-.bayar-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-}
-
-.bayar--lunas {
-  background: rgba(27, 216, 155, 0.1);
-  color: #1bd89b;
-  border: 1px solid rgba(27, 216, 155, 0.2);
-}
-
-.bayar--belum {
-  background: rgba(255, 77, 77, 0.08);
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 77, 77, 0.18);
-}
-
-/* Aksi buttons */
-.row-aksi-group {
+/* Action buttons row */
+.layanan-card__actions {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
-.aksi-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  border: 1px solid #2a2a2a;
-  background: #1a1a1a;
-  color: #888;
-  font-size: 13px;
+.layanan-btn {
+  flex: 1;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  border: 1px solid transparent;
 }
 
-.aksi-btn:hover { transform: translateY(-1px); }
+.layanan-btn--edit {
+  background: #1a1a1a;
+  border-color: #2a2a2a;
+  color: #ccc;
+}
 
-.aksi-btn--detail:hover {
+.layanan-btn--edit:hover {
   border-color: #d4a017;
   color: #d4a017;
-  background: rgba(212, 160, 23, 0.08);
 }
 
-.aksi-btn--konfirm:hover {
-  border-color: #1bd89b;
-  color: #1bd89b;
-  background: rgba(27, 216, 155, 0.08);
+.layanan-btn--hapus {
+  background: rgba(255, 77, 77, 0.08);
+  border-color: rgba(255, 77, 77, 0.25);
+  color: #ff6b6b;
 }
 
-.aksi-btn--batal:hover {
+.layanan-btn--hapus:hover {
+  background: rgba(255, 77, 77, 0.15);
   border-color: #ff4d4d;
   color: #ff4d4d;
-  background: rgba(255, 77, 77, 0.08);
 }
 
-/* Pagination */
-.btable-pagination {
-  display: flex;
+/* Add placeholder card */
+.layanan-card--add {
+  border-style: dashed;
+  border-color: #2a2a2a;
+  background: transparent;
+  cursor: pointer;
+  min-height: 200px;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid #1a1a1a;
 }
 
-.page-btn {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  color: #ccc;
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.page-btn:hover:not(:disabled) {
+.layanan-card--add:hover {
   border-color: #d4a017;
-  color: #d4a017;
+  background: rgba(212, 160, 23, 0.04);
 }
 
-.page-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+.layanan-card__add-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
 }
 
-.page-info {
+.layanan-card--add:hover .layanan-card__add-inner {
+  opacity: 0.8;
+}
+
+.layanan-card__add-icon {
+  font-size: 28px;
+  font-weight: 300;
+  color: #888;
+  line-height: 1;
+}
+
+.layanan-card__add-label {
   font-size: 13px;
-  color: #666;
+  color: #888;
+  font-weight: 500;
 }
