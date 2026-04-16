@@ -1,6 +1,6 @@
 <?php
 // FILE: modalBookingManual.php
-// USAGE : <?php include 'modalBookingManual.php'; ?>
+// USAGE : <?php include 'modalBookingManual.php';
 // OPEN  : openModalBookingManual()
 // CLOSE : closeModalBookingManual()
 ?>
