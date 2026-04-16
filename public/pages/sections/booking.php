@@ -1,5 +1,7 @@
 <?php
 // FILE: booking.php
+// Modal Booking Manual di-include di sini karena section ini
+// yang punya tombol "+ Tambah Booking".
 ?>
 
 <!-- ============================================================
@@ -29,7 +31,8 @@
     <button class="action-btn" onclick="filterBookings('proses')">Proses</button>
     <button class="action-btn" onclick="filterBookings('selesai')">Selesai</button>
     <button class="action-btn" onclick="filterBookings('dibatalkan')">Dibatalkan</button>
-    <button class="action-btn action-btn--primary" onclick="openTambahBooking()">+ Tambah Booking</button>
+    <!-- Tombol ini membuka modalBookingManual -->
+    <button class="action-btn action-btn--primary" onclick="openModalBookingManual()">+ Tambah Booking</button>
 </div>
 
 <!-- TOOLBAR: search + filter -->
@@ -64,23 +67,23 @@
 <!-- SUMMARY CHIPS -->
 <div class="booking-summary-row">
     <div class="bsum-card">
-        <span class="bsum-num"           id="bsumTotal">0</span>
+        <span class="bsum-num"                   id="bsumTotal">0</span>
         <span class="bsum-label">Total</span>
     </div>
     <div class="bsum-card">
-        <span class="bsum-num bsum-num--pending" id="bsumMenunggu">0</span>
+        <span class="bsum-num bsum-num--pending"  id="bsumMenunggu">0</span>
         <span class="bsum-label">Menunggu</span>
     </div>
     <div class="bsum-card">
-        <span class="bsum-num bsum-num--proses"  id="bsumProses">0</span>
+        <span class="bsum-num bsum-num--proses"   id="bsumProses">0</span>
         <span class="bsum-label">Proses</span>
     </div>
     <div class="bsum-card">
-        <span class="bsum-num bsum-num--selesai" id="bsumSelesai">0</span>
+        <span class="bsum-num bsum-num--selesai"  id="bsumSelesai">0</span>
         <span class="bsum-label">Selesai</span>
     </div>
     <div class="bsum-card">
-        <span class="bsum-num bsum-num--batal"   id="bsumBatal">0</span>
+        <span class="bsum-num bsum-num--batal"    id="bsumBatal">0</span>
         <span class="bsum-label">Dibatalkan</span>
     </div>
 </div>
@@ -121,6 +124,14 @@
         <button class="page-btn" id="btnNext" onclick="changePage(1)">Next &#8594;</button>
     </div>
 </div>
+
+
+<!-- ============================================================
+     MODAL COMPONENT — Booking Manual
+     Di-include di sini (bukan di layanan.php) karena tombol
+     "+ Tambah Booking" ada di section ini.
+============================================================ -->
+<?php include __DIR__ . '/../../components/ui/modalBookingManual.php'; ?>
 
 
 <script>
@@ -180,12 +191,7 @@
        karena script ini ada SETELAH semua elemen di atas
     ============================================================ */
     (function init() {
-        if (DUMMY_MODE) {
-            allBookings  = getDummyBookings();
-        } else {
-            /* REAL: ganti dengan getBookings() lalu panggil afterLoad */
-            allBookings = [];
-        }
+        allBookings  = DUMMY_MODE ? getDummyBookings() : [];
         filteredData = allBookings.slice();
         populateBarberFilter();
         updateSummary();
@@ -196,7 +202,7 @@
        POPULATE BARBER FILTER
     ============================================================ */
     function populateBarberFilter() {
-        var sel     = document.getElementById('filterBarber');
+        var sel = document.getElementById('filterBarber');
         if (!sel) return;
         var barbers = [];
         allBookings.forEach(function(b) {
@@ -222,9 +228,7 @@
     };
 
     window.applyFilters = function() {
-        var keyword = (document.getElementById('searchInput') || {}).value || '';
-        keyword = keyword.toLowerCase().trim();
-
+        var keyword    = ((document.getElementById('searchInput')  || {}).value || '').toLowerCase().trim();
         var tanggalVal = (document.getElementById('filterTanggal') || {}).value || 'semua';
         var barberVal  = (document.getElementById('filterBarber')  || {}).value || 'semua';
         var statusVal  = (document.getElementById('filterStatus')  || {}).value || 'semua';
@@ -232,7 +236,7 @@
         var today    = new Date().toISOString().slice(0, 10);
         var tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
         var d = new Date(), day = d.getDay();
-        var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        var diff     = d.getDate() - day + (day === 0 ? -6 : 1);
         var weekStart = new Date(new Date().setDate(diff)).toISOString().slice(0, 10);
         var weekEnd   = new Date(new Date(weekStart).getTime() + 6 * 86400000).toISOString().slice(0, 10);
 
@@ -255,13 +259,10 @@
     };
 
     /* ============================================================
-       SUMMARY — dengan null-guard per elemen
+       SUMMARY
     ============================================================ */
     function updateSummary() {
-        function set(id, val) {
-            var el = document.getElementById(id);
-            if (el) el.textContent = val;
-        }
+        function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
         set('bsumTotal',    filteredData.length);
         set('bsumMenunggu', filteredData.filter(function(b){ return b.status_booking === 'menunggu'; }).length);
         set('bsumProses',   filteredData.filter(function(b){ return b.status_booking === 'proses'; }).length);
@@ -284,9 +285,9 @@
         function set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
         function setDisabled(id, v) { var el = document.getElementById(id); if (el) el.disabled = v; }
 
-        set('bookingCount',          total + ' Data');
-        set('bookingTableSubtitle',  total + ' booking ditemukan');
-        set('pageInfo',              'Halaman ' + currentPage + ' / ' + maxPage);
+        set('bookingCount',         total + ' Data');
+        set('bookingTableSubtitle', total + ' booking ditemukan');
+        set('pageInfo',             'Halaman ' + currentPage + ' / ' + maxPage);
         setDisabled('btnPrev', currentPage <= 1);
         setDisabled('btnNext', currentPage >= maxPage);
 
@@ -310,7 +311,7 @@
         var sIcon = statusIcon(b.status_booking);
         var bCls  = b.status_bayar === 'lunas' ? 'bayar--lunas' : 'bayar--belum';
         var bTxt  = b.status_bayar === 'lunas' ? '&#10003; Lunas' : '&#9679; Belum';
-        var init  = ((b.nama_pelanggan || '?')).substring(0, 2).toUpperCase();
+        var init  = (b.nama_pelanggan || '?').substring(0, 2).toUpperCase();
         var tgl   = fmtTanggal(b.tanggal);
 
         return '<div class="btable-row">'
@@ -392,11 +393,11 @@
 
     /* ============================================================
        ACTION STUBS — sambungkan ke BE
+       openModalBookingManual() → sudah didefinisikan di modalBookingManual.php
     ============================================================ */
-    window.openTambahBooking = function() { alert('TODO: modal tambah booking'); };
-    window.lihatDetail       = function(id) { alert('TODO: detail booking ID ' + id); };
-    window.konfirmBooking    = function(id) { if (confirm('Konfirmasi booking ID ' + id + '?')) alert('TODO: konfirmasi ke BE'); };
-    window.batalBooking      = function(id) { if (confirm('Batalkan booking ID '  + id + '?')) alert('TODO: batal ke BE'); };
+    window.lihatDetail    = function(id) { alert('TODO: detail booking ID ' + id); };
+    window.konfirmBooking = function(id) { if (confirm('Konfirmasi booking ID ' + id + '?')) alert('TODO: konfirmasi ke BE'); };
+    window.batalBooking   = function(id) { if (confirm('Batalkan booking ID '  + id + '?')) alert('TODO: batal ke BE'); };
 
 })();
 </script>

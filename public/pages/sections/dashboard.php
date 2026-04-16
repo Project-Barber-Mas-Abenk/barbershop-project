@@ -22,7 +22,7 @@
     <button class="action-btn">Input Ke Dashboard</button>
     <button class="action-btn">Booking Hari Ini</button>
     <button class="action-btn">Redirect Ke WA Admin</button>
-    <button class="action-btn action-btn--primary">+ Tambah Booking</button>
+    <button class="action-btn action-btn--primary" onclick="openModalBookingManual()">+ Tambah Booking</button>
 </div>
 
 <!-- STATS SECTION -->
@@ -88,7 +88,7 @@
                 </div>
                 <div class="panel-header-right">
                     <div class="antrian-badge" id="jadwalAntrian">0 Antrian</div>
-                    <button class="btn-catat">+ Catat</button>
+                    <button class="action-btn action-btn--primary" onclick="openModalBookingManual()">+ Catat</button>
                 </div>
             </div>
 
@@ -151,7 +151,7 @@
         </div>
     </div>
 
-
+    <?php include __DIR__ . '/../../components/ui/modalBookingManual.php'; ?>
 
     <script>
         if (typeof formatRupiah === 'undefined') {

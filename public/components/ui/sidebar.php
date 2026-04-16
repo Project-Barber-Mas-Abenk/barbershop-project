@@ -29,10 +29,7 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
                 <a href="dashboard.php?page=booking">Daftar Booking</a>
             </li>
             <li class="<?= $currentPage === 'layanan' ? 'active' : '' ?>">
-                <a href="dashboard.php?page=layanan">Layanan</a>
-            </li>
-            <li class="<?= $currentPage === 'barber' ? 'active' : '' ?>">
-                <a href="dashboard.php?page=barber">Barber/Staff</a>
+                <a href="dashboard.php?page=layanan">Layanan & Info Barber</a>
             </li>
             <li class="<?= $currentPage === 'settings' ? 'active' : '' ?>">
                 <a href="dashboard.php?page=settings">Settings</a>
