@@ -1,5 +1,9 @@
 <?php
 // FILE: layanan.php
+// Includes modal component:
+//   - modalTambahLayanan.php  → untuk tombol + Tambah Layanan
+//   - modalTambahBarber.php   → untuk tombol + Tambah Barber
+// NOTE: modalBookingManual.php di-include di booking.php (bukan di sini)
 ?>
 
 <!-- ============================================================
@@ -28,13 +32,13 @@
             <h3 class="panel-title">Daftar Layanan</h3>
             <p class="panel-subtitle">Kelola layanan dan nominal harga layanan</p>
         </div>
+        <!-- Tombol ini membuka modalTambahLayanan -->
         <button class="action-btn action-btn--primary" onclick="openTambahLayanan()">
             + Tambah Layanan
         </button>
     </div>
 
     <!-- SERVICE CARD GRID -->
-    <!-- FIX: id dipisah — layananGrid khusus untuk layanan -->
     <div class="layanan-grid" id="layananGrid">
         <!-- Cards dirender via JS -->
     </div>
@@ -48,6 +52,7 @@
             <h3 class="panel-title">Info Barber</h3>
             <p class="panel-subtitle">Kelola informasi barber dan jadwal kerja</p>
         </div>
+        <!-- Tombol ini membuka modalTambahBarber -->
         <button class="action-btn action-btn--primary" onclick="openTambahBarber()">
             + Tambah Barber
         </button>
@@ -60,6 +65,14 @@
     </div>
 
 </div>
+
+
+<!-- ============================================================
+     MODAL COMPONENTS
+     Di-include di bawah konten utama, sebelum </body>
+============================================================ -->
+<?php include __DIR__ . '/../../components/ui/modalTambahLayanan.php'; ?>
+<?php include __DIR__ . '/../../components/ui/modalTambahBarber.php'; ?>
 
 
 <script>
@@ -100,8 +113,7 @@
     ============================================================ */
     function getDummyBarber() {
         return [
-            { id: 1, nama: 'Budi',  jadwal: '09:00 - 17:00', hari: 'Senin - Jumat',  deskripsi: 'Barber senior dengan pengalaman 10 tahun', ikon: '👤' },
-            { id: 2, nama: 'Andi',  jadwal: '12:00 - 20:00', hari: 'Selasa - Sabtu', deskripsi: 'Spesialis fade dan modern haircut',         ikon: '👤' },
+            { id: 1, nama: 'Abenk', jadwal: '09:00 - 17:00', hari: 'Senin - Jumat', deskripsi: 'Barber senior dengan pengalaman 10 tahun', ikon: '👤' },
         ];
     }
 
@@ -227,23 +239,48 @@
 
 
     /* ============================================================
-       ACTION STUBS — LAYANAN
-       Sambungkan ke BE / modal saat implementasi nyata
+       ACTION — LAYANAN
+       Edit: buka modal dalam mode Edit dengan data yang sudah ada.
+       Hapus: confirm → stub ke BE.
+       openTambahLayanan() didefinisikan di modalTambahLayanan.php
     ============================================================ */
-    window.openTambahLayanan = function ()    { alert('TODO: modal tambah layanan'); };
-    window.editLayanan       = function (id)  { alert('TODO: edit layanan ID ' + id); };
-    window.hapusLayanan      = function (id)  {
-        if (confirm('Hapus layanan ID ' + id + '?')) alert('TODO: hapus layanan ke BE');
+    window.editLayanan = function (id) {
+        /* TODO: ambil data dari BE. Sementara pakai dummy. */
+        var data = getDummyLayanan().find(function (l) { return l.id === id; });
+        if (!data) { console.warn('editLayanan: data id', id, 'tidak ditemukan'); return; }
+
+        /* Buka modal dalam mode Edit, oper data yang sudah ada */
+        openTambahLayanan(data);
     };
 
+    window.hapusLayanan = function (id) {
+        if (!confirm('Hapus layanan ID ' + id + '?')) return;
+        /* TODO: kirim request DELETE ke BE */
+        console.log('[layanan] hapus id:', id);
+        alert('TODO: hapus layanan ke BE');
+    };
+
+
     /* ============================================================
-       ACTION STUBS — BARBER
-       Sambungkan ke BE / modal saat implementasi nyata
+       ACTION — BARBER
+       Edit: buka modal dalam mode Edit dengan data yang sudah ada.
+       Hapus: confirm → stub ke BE.
+       openTambahBarber() didefinisikan di modalTambahBarber.php
     ============================================================ */
-    window.openTambahBarber  = function ()    { alert('TODO: modal tambah barber'); };
-    window.editBarber        = function (id)  { alert('TODO: edit barber ID ' + id); };
-    window.hapusBarber       = function (id)  {
-        if (confirm('Hapus barber ID ' + id + '?')) alert('TODO: hapus barber ke BE');
+    window.editBarber = function (id) {
+        /* TODO: ambil data dari BE. Sementara pakai dummy. */
+        var data = getDummyBarber().find(function (b) { return b.id === id; });
+        if (!data) { console.warn('editBarber: data id', id, 'tidak ditemukan'); return; }
+
+        /* Buka modal dalam mode Edit, oper data yang sudah ada */
+        openTambahBarber(data);
+    };
+
+    window.hapusBarber = function (id) {
+        if (!confirm('Hapus barber ID ' + id + '?')) return;
+        /* TODO: kirim request DELETE ke BE */
+        console.log('[barber] hapus id:', id);
+        alert('TODO: hapus barber ke BE');
     };
 
 })();
