@@ -65,6 +65,10 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     </div>
 
     <script>
+        // [DEBUG] Log origin untuk troubleshooting Google OAuth
+        console.log('[GOOGLE OAUTH DEBUG] Current origin:', window.location.origin);
+        console.log('[GOOGLE OAUTH DEBUG] Current href:', window.location.href);
+        
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
