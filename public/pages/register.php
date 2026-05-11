@@ -2,12 +2,14 @@
 session_start();
 
 if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-    header('Location: dashboard.php');
+    $redirect = ($_SESSION['role'] ?? 'user') === 'admin' ? 'dashboard.php' : '../client/index.php';
+    header('Location: ' . $redirect);
     exit();
 }
 ?>
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,10 +17,16 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     <link rel="stylesheet" href="../assets/css/auth.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body>
-    <!-- [GOOGLE OAUTH] Hidden container untuk Google Sign-In -->
-    <div id="g_id_onload" data-client_id="39389480506-kf3ce7tlju7tg646tr9240rjuiidj7tu.apps.googleusercontent.com" data-context="signup" data-ux_mode="popup" data-callback="handleGoogleCredentialResponse" data-auto_prompt="false"></div>
-    
+    <div id="g_id_onload"
+         data-client_id="39389480506-kf3ce7tlju7tg646tr9240rjuiidj7tu.apps.googleusercontent.com"
+         data-context="signup"
+         data-ux_mode="popup"
+         data-callback="handleGoogleCredentialResponse"
+         data-auto_prompt="false">
+    </div>
+
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <div class="auth-container">
@@ -27,6 +35,12 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         </div>
 
         <div class="auth-right">
+            <button onclick="goBack()" class="back-btn"
+                style="background: none; border: none; color: var(--color-primary);
+                font-size: 14px; cursor: pointer; margin-bottom: 20px; text-align: left;">
+                ← Kembali
+            </button>
+
             <h4>Selamat Datang di Shift Studio</h4>
             <h2>Bergabunglah bersama kami dan rasakan kenyamanan di setiap pencukuran.</h2>
 
@@ -44,21 +58,22 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 <input type="password" name="password" id="password" placeholder="Masukkan Kata Sandi" required>
 
                 <label>Konfirmasi Kata Sandi</label>
-                <input type="password" name="confirm_password" id="confirm_password" placeholder="Masukkan Ulang Kata Sandi" required>
+                <input type="password" name="confirm_password" id="confirm_password"
+                       placeholder="Masukkan Ulang Kata Sandi" required>
 
                 <div id="errorMsg" style="color: #e74c3c; margin-bottom: 10px; font-size: 14px;"></div>
 
                 <button type="submit" id="submitBtn">Buat Akun</button>
             </form>
 
-            <div class="divider">Atau masuk menggunakan</div>
+            <div class="divider">Atau daftar menggunakan</div>
 
             <button class="google-btn" id="googleBtn">
                 <svg width="18" height="18" viewBox="0 0 48 48">
-                    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z" />
-                    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z" />
-                    <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2.1 13.7-5.5l-6.3-5.2C29.4 36 27 37 24 37c-5.3 0-9.8-3.6-11.3-8.4l-6.6 5.1C9.7 39.6 16.3 44 24 44z" />
-                    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.4 5.4-6.9 6.5l6.3 5.2C39.5 36.2 44 30.7 44 24c0-1.3-.1-2.7-.4-3.5z" />
+                    <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.9 32.7 29.4 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+                    <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 18.9 12 24 12c3 0 5.7 1.1 7.8 2.9l5.7-5.7C34.1 6.5 29.3 4 24 4c-7.7 0-14.3 4.3-17.7 10.7z"/>
+                    <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2.1 13.7-5.5l-6.3-5.2C29.4 36 27 37 24 37c-5.3 0-9.8-3.6-11.3-8.4l-6.6 5.1C9.7 39.6 16.3 44 24 44z"/>
+                    <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1 3-3.4 5.4-6.9 6.5l6.3 5.2C39.5 36.2 44 30.7 44 24c0-1.3-.1-2.7-.4-3.5z"/>
                 </svg>
                 Lanjutkan dengan Google
             </button>
@@ -70,100 +85,106 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     </div>
 
     <script>
-        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
-            const errorMsg = document.getElementById('errorMsg');
+
+            const errorMsg  = document.getElementById('errorMsg');
             const submitBtn = document.getElementById('submitBtn');
-            
-            const nama = document.getElementById('nama').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const no_hp = document.getElementById('no_hp').value.trim();
-            const password = document.getElementById('password').value;
+
+            const nama             = document.getElementById('nama').value.trim();
+            const email            = document.getElementById('email').value.trim();
+            const no_hp            = document.getElementById('no_hp').value.trim();
+            const password         = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
-            
+
             errorMsg.textContent = '';
-            
+
             if (password !== confirm_password) {
                 errorMsg.textContent = 'Konfirmasi password tidak cocok!';
                 return;
             }
-            
             if (password.length < 6) {
                 errorMsg.textContent = 'Password minimal 6 karakter!';
                 return;
             }
-            
-            submitBtn.disabled = true;
+
+            submitBtn.disabled    = true;
             submitBtn.textContent = 'Memproses...';
-            
+
             try {
                 const response = await fetch('../../api/auth/register.php', {
-                    method: 'POST',
+                    method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nama, email, no_hp, password })
+                    body:    JSON.stringify({ nama, email, no_hp, password })
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.status === 'success') {
-                    window.location.href = 'dashboard.php';
+                    // ── PUBLIC USERS: never auto-login; send to login with flag ──
+                    window.location.href = 'login.php?registered=1';
                 } else {
-                    errorMsg.textContent = data.message || 'Registrasi gagal';
-                    submitBtn.disabled = false;
+                    errorMsg.textContent  = data.message || 'Registrasi gagal';
+                    submitBtn.disabled    = false;
                     submitBtn.textContent = 'Buat Akun';
                 }
             } catch (err) {
-                errorMsg.textContent = 'Terjadi kesalahan. Coba lagi.';
-                submitBtn.disabled = false;
+                errorMsg.textContent  = 'Terjadi kesalahan. Coba lagi.';
+                submitBtn.disabled    = false;
                 submitBtn.textContent = 'Buat Akun';
             }
         });
-        
-        document.getElementById('googleBtn').addEventListener('click', function() {
-            // [GOOGLE OAUTH] Trigger Google One Tap/Popup saat button diklik
+
+        // ── Google OAuth (register context = auto-create account then login) ─
+        document.getElementById('googleBtn').addEventListener('click', function () {
             if (typeof google !== 'undefined' && google.accounts) {
                 google.accounts.id.prompt();
             } else {
                 alert('Google OAuth belum siap. Pastikan Google script sudah dimuat.');
             }
         });
-        
-        // [GOOGLE OAUTH] Handler untuk response dari Google
+
         function handleGoogleCredentialResponse(response) {
-            // Decode JWT token dari Google
-            const jwt = response.credential;
-            const base64Url = jwt.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
+            const jwt         = response.credential;
+            const base64Url   = jwt.split('.')[1];
+            const base64      = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload  = decodeURIComponent(
+                atob(base64).split('').map(c =>
+                    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                ).join('')
+            );
             const payload = JSON.parse(jsonPayload);
-            
+
             const googleData = {
-                email: payload.email,
-                nama: payload.name,
+                email:     payload.email,
+                nama:      payload.name,
                 google_id: payload.sub,
-                no_hp: ''
+                no_hp:     ''
             };
-            
-            // Kirim ke backend
+
             fetch('../../api/auth/google_login.php', {
-                method: 'POST',
+                method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(googleData)
+                body:    JSON.stringify(googleData)
             })
             .then(res => res.json())
             .then(data => {
                 if (data.status === 'success') {
-                    window.location.href = 'dashboard.php';
+                    // Google auth creates + logs in — safe to redirect directly
+                    window.location.href = '../client/index.php';
                 } else {
-                    document.getElementById('errorMsg').textContent = data.message || 'Google login gagal';
+                    document.getElementById('errorMsg').textContent =
+                        data.message || 'Google login gagal';
                 }
             })
-            .catch(err => {
-                document.getElementById('errorMsg').textContent = 'Terjadi kesalahan saat login dengan Google.';
+            .catch(() => {
+                document.getElementById('errorMsg').textContent =
+                    'Terjadi kesalahan saat login dengan Google.';
             });
+        }
+
+        function goBack() {
+            window.location.href = '../client/index.php';
         }
     </script>
 </body>

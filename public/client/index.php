@@ -1,11 +1,18 @@
 <?php
+
 /**
  * Home Page
  * public/client/index.php
  */
-$active_page = 'home';
+if (session_status() === PHP_SESSION_NONE) {
+  session_start();
+}
+
+$active_page  = 'home';
 $page_title  = 'Shift Studio Barbershop';
 $extra_css   = ['home.css'];
+
+$is_logged_in = isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true;
 
 require __DIR__ . '/components/header.php';
 ?>
@@ -14,99 +21,134 @@ require __DIR__ . '/components/header.php';
      HERO
      ══════════════════════════════════════════════════ -->
 <main>
-<section class="hero" aria-label="Hero">
-  <div class="hero__inner">
-    <span class="hero__eyebrow">Est. 2018 &nbsp;·&nbsp; Perumnas, Cirebon</span>
-    <h1 class="hero__title">Shift<br>Studio</h1>
-    <p class="hero__title-ghost" aria-hidden="true">Shift Studio</p>
-    <div class="hero__cta">
-      <a href="booking.php" class="btn btn-primary btn-lg">
-        Book Now &rarr;
-      </a>
+  <section class="hero" aria-label="Hero">
+    <div class="hero__inner">
+      <span class="hero__eyebrow">Est. 2018 &nbsp;·&nbsp; Perumnas, Cirebon</span>
+      <h1 class="hero__title">Shift<br>Studio</h1>
+      <p class="hero__title-ghost" aria-hidden="true">Shift Studio</p>
+      <div class="hero__cta">
+        <?php if ($is_logged_in): ?>
+          <a href="booking.php" class="btn btn-primary">Book Now</a>
+        <?php else: ?>
+          <a href="javascript:void(0)"
+            class="btn btn-primary"
+            onclick="confirmLoginRedirect()">Book Now</a>
+        <?php endif; ?>
+      </div>
     </div>
-  </div>
 
-  <!-- Founder strip — bottom left of hero -->
-  <div class="hero__founder-strip reveal">
-    <div class="hero__founder-frame">
-      <!-- Replace src with actual founder image when available -->
-      <img class="hero__founder-img"
-           src="assets/img/founder-placeholder.jpg"
-           alt="Mufadhol Abeng, Founder"
-           onerror="this.style.background='var(--color-surface-3)';this.removeAttribute('src')">
+    <!-- Founder strip — bottom left of hero -->
+    <div class="hero__founder-strip reveal">
+      <div class="hero__founder-frame">
+        <!-- Replace src with actual founder image when available -->
+        <img class="hero__founder-img"
+          src="assets/img/founder-placeholder.jpg"
+          alt="Mufadhol Abeng, Founder"
+          onerror="this.style.background='var(--color-surface-3)';this.removeAttribute('src')">
+      </div>
+      <div class="hero__founder-info">
+        <span class="badge badge-gold">This Is a</span>
+        <h3>Founder Shift Studio Barbershop</h3>
+        <span class="hero__founder-name">Mufadhol Abeng</span>
+      </div>
     </div>
-    <div class="hero__founder-info">
-      <span class="badge badge-gold">This Is a</span>
-      <h3>Founder Shift Studio Barbershop</h3>
-      <span class="hero__founder-name">Mufadhol Abeng</span>
-    </div>
-  </div>
-</section>
+  </section>
 
 
-<!-- ══════════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════════════
      WHY CHOOSE US
      ══════════════════════════════════════════════════ -->
-<section class="why-us section" aria-labelledby="why-heading">
-  <div class="section-heading reveal">
-    <span class="section-heading__label">Our Work</span>
-    <h2 class="section-heading__title" id="why-heading">Why Choose Us?</h2>
-    <p class="section-heading__subtitle">
-      Precision cuts, premium grooming products, and a team that truly cares
-      about the craft — every visit, every time.
-    </p>
-  </div>
+  <section class="why-us section" aria-labelledby="why-heading">
+    <div class="section-heading reveal">
+      <span class="section-heading__label">Our Work</span>
+      <h2 class="section-heading__title" id="why-heading">Why Choose Us?</h2>
+      <p class="section-heading__subtitle">
+        Precision cuts, premium grooming products, and a team that truly cares
+        about the craft — every visit, every time.
+      </p>
+    </div>
 
-  <!-- Gallery grid — replace # with real image paths when available -->
-  <div class="gallery-grid reveal reveal-delay-1" role="list" aria-label="Barbershop gallery">
-    <div class="gallery-col">
-      <div class="gallery-cell gallery-cell--sm" role="listitem">
-        <img src="assets/img/gallery/g1.jpg" alt="Haircut result" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
+    <!-- Gallery grid — replace # with real image paths when available -->
+    <div class="gallery-grid reveal reveal-delay-1" role="list" aria-label="Barbershop gallery">
+      <div class="gallery-col">
+        <div class="gallery-cell gallery-cell--sm" role="listitem">
+          <img src="assets/img/gallery/g1.jpg" alt="Haircut result" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+        <div class="gallery-cell gallery-cell--lg" role="listitem">
+          <img src="assets/img/gallery/g2.jpg" alt="Styling session" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
       </div>
-      <div class="gallery-cell gallery-cell--lg" role="listitem">
-        <img src="assets/img/gallery/g2.jpg" alt="Styling session" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
+      <div class="gallery-col">
+        <div class="gallery-cell gallery-cell--md" role="listitem">
+          <img src="assets/img/gallery/g3.jpg" alt="Barbershop interior" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+        <div class="gallery-cell gallery-cell--lg" role="listitem">
+          <img src="assets/img/gallery/g4.jpg" alt="Coloring service" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+      </div>
+      <div class="gallery-col">
+        <div class="gallery-cell gallery-cell--lg" role="listitem">
+          <img src="assets/img/gallery/g5.jpg" alt="Premium cut" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+        <div class="gallery-cell gallery-cell--md" role="listitem">
+          <img src="assets/img/gallery/g6.jpg" alt="Beard grooming" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+      </div>
+      <div class="gallery-col">
+        <div class="gallery-cell gallery-cell--sm" role="listitem">
+          <img src="assets/img/gallery/g7.jpg" alt="Creambath treatment" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+        <div class="gallery-cell gallery-cell--md" role="listitem">
+          <img src="assets/img/gallery/g8.jpg" alt="Highlight service" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
+      </div>
+      <div class="gallery-col">
+        <div class="gallery-cell gallery-cell--lg" role="listitem">
+          <img src="assets/img/gallery/g9.jpg" alt="Shift Studio vibe" loading="lazy"
+            onerror="this.parentElement.style.background='var(--color-surface-3)'">
+        </div>
       </div>
     </div>
-    <div class="gallery-col">
-      <div class="gallery-cell gallery-cell--md" role="listitem">
-        <img src="assets/img/gallery/g3.jpg" alt="Barbershop interior" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
-      <div class="gallery-cell gallery-cell--lg" role="listitem">
-        <img src="assets/img/gallery/g4.jpg" alt="Coloring service" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     PRICING
+     ══════════════════════════════════════════════════ -->
+  <section class="pricing section" aria-labelledby="pricing-heading">
+    <div class="section-heading reveal">
+      <span class="section-heading__label">Services &amp; Pricing</span>
+      <h2 class="section-heading__title" id="pricing-heading">Available Services</h2>
     </div>
-    <div class="gallery-col">
-      <div class="gallery-cell gallery-cell--lg" role="listitem">
-        <img src="assets/img/gallery/g5.jpg" alt="Premium cut" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
-      <div class="gallery-cell gallery-cell--md" role="listitem">
-        <img src="assets/img/gallery/g6.jpg" alt="Beard grooming" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
+
+    <div class="pricing__grid" role="list">
+      <?php
+      $services = [
+        ['Haircut',          '30K'],
+        ['Haircut Booking',  '50K'],
+        ['Hairwash',         '10K'],
+        ['Coloring',         '100K – 300K'],
+        ['Creambath',        '40K'],
+        ['Highlight',        '100K – 300K'],
+      ];
+      foreach ($services as $i => [$name, $price]):
+      ?>
+        <article class="price-card reveal reveal-delay-<?= ($i % 4) + 1 ?>" role="listitem">
+          <p class="price-card__name"><?= htmlspecialchars($name) ?></p>
+          <h3 class="price-card__price"><?= htmlspecialchars($price) ?></h3>
+        </article>
+      <?php endforeach; ?>
     </div>
-    <div class="gallery-col">
-      <div class="gallery-cell gallery-cell--sm" role="listitem">
-        <img src="assets/img/gallery/g7.jpg" alt="Creambath treatment" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
-      <div class="gallery-cell gallery-cell--md" role="listitem">
-        <img src="assets/img/gallery/g8.jpg" alt="Highlight service" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
-    </div>
-    <div class="gallery-col">
-      <div class="gallery-cell gallery-cell--lg" role="listitem">
-        <img src="assets/img/gallery/g9.jpg" alt="Shift Studio vibe" loading="lazy"
-             onerror="this.parentElement.style.background='var(--color-surface-3)'">
-      </div>
-    </div>
-  </div>
-</section>
+  </section>
+</main>
 
 
 <!-- ══════════════════════════════════════════════════
@@ -136,8 +178,14 @@ require __DIR__ . '/components/header.php';
       </div>
 
       <div class="branch__cta">
-        <a href="booking.php" class="btn btn-primary">Book Here</a>
-        <a href="about.php#map"  class="btn btn-outline">See On Map</a>
+        <?php if ($is_logged_in): ?>
+          <a href="booking.php" class="btn btn-primary">Book Now</a>
+        <?php else: ?>
+          <a href="javascript:void(0)"
+            class="btn btn-primary"
+            onclick="confirmLoginRedirect()">Book Now</a>
+        <?php endif; ?>
+        <a href="about.php#map" class="btn btn-outline">See On Map</a>
       </div>
     </div>
 
@@ -156,35 +204,14 @@ require __DIR__ . '/components/header.php';
   </div>
 </section>
 
+<script>
+    function confirmLoginRedirect() {
+        const go = confirm('Anda harus login terlebih dahulu untuk melakukan booking. Ke halaman login sekarang?');
+        if (go) {
+            window.location.href = '../pages/login.php';
+        }
+    }
+</script>
 
-<!-- ══════════════════════════════════════════════════
-     PRICING
-     ══════════════════════════════════════════════════ -->
-<section class="pricing section" aria-labelledby="pricing-heading">
-  <div class="section-heading reveal">
-    <span class="section-heading__label">Services &amp; Pricing</span>
-    <h2 class="section-heading__title" id="pricing-heading">Available Services</h2>
-  </div>
-
-  <div class="pricing__grid" role="list">
-    <?php
-    $services = [
-      ['Haircut',          '30K'],
-      ['Haircut Booking',  '50K'],
-      ['Hairwash',         '10K'],
-      ['Coloring',         '100K – 300K'],
-      ['Creambath',        '40K'],
-      ['Highlight',        '100K – 300K'],
-    ];
-    foreach ($services as $i => [$name, $price]):
-    ?>
-    <article class="price-card reveal reveal-delay-<?= ($i % 4) + 1 ?>" role="listitem">
-      <p class="price-card__name"><?= htmlspecialchars($name) ?></p>
-      <h3 class="price-card__price"><?= htmlspecialchars($price) ?></h3>
-    </article>
-    <?php endforeach; ?>
-  </div>
-</section>
-</main>
 
 <?php require __DIR__ . '/components/footer.php'; ?>
